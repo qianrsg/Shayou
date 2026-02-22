@@ -37,6 +37,10 @@ namespace Bang.Core.Domain.Entities
             }
             else if (Process == "Processing")
             {
+                Process = "Processed";
+            }
+            else if (Process == "Processed")
+            {
                 Process = "Exiting";
             }
             else if (Process == "Exiting")
@@ -48,6 +52,11 @@ namespace Bang.Core.Domain.Entities
         public bool IsFinished()
         {
             return Process == "Finished";
+        }
+
+        public void Stop()
+        {
+            Process = "Finished";
         }
     }
 }

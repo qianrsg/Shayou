@@ -1,45 +1,29 @@
-using System.Collections.Generic;
-
 namespace Bang.Core.Domain.Entities
 {
     public class Card
     {
-        public Dictionary<string, int> IntProperties { get; private set; }
-        public Dictionary<string, string> StringProperties { get; private set; }
+        public string Suit { get; set; }
+        public int Rank { get; set; }
+        public string Id { get; set; }
+        public string Name { get; set; }
         private string currentArea;
 
         public Card()
         {
-            IntProperties = new Dictionary<string, int>();
-            StringProperties = new Dictionary<string, string>();
+            Suit = "";
+            Rank = 0;
+            Id = "";
+            Name = "";
             currentArea = "";
         }
 
-        public Card(Dictionary<string, int> intProps, Dictionary<string, string> stringProps)
+        public Card(string suit, int rank, string id, string name)
         {
-            IntProperties = new Dictionary<string, int>(intProps);
-            StringProperties = new Dictionary<string, string>(stringProps);
+            Suit = suit;
+            Rank = rank;
+            Id = id;
+            Name = name;
             currentArea = "";
-        }
-
-        public void SetProperty(string key, int value)
-        {
-            IntProperties[key] = value;
-        }
-
-        public void SetProperty(string key, string value)
-        {
-            StringProperties[key] = value;
-        }
-
-        public int GetIntProperty(string key)
-        {
-            return IntProperties.ContainsKey(key) ? IntProperties[key] : 0;
-        }
-
-        public string GetStringProperty(string key)
-        {
-            return StringProperties.ContainsKey(key) ? StringProperties[key] : "";
         }
 
         public string GetCurrentArea()
@@ -55,16 +39,10 @@ namespace Bang.Core.Domain.Entities
         public void PrintInfo()
         {
             Console.WriteLine("   Card Properties:");
-            Console.WriteLine("     String Properties:");
-            foreach (var prop in StringProperties)
-            {
-                Console.WriteLine($"       {prop.Key}: {prop.Value}");
-            }
-            Console.WriteLine("     Int Properties:");
-            foreach (var prop in IntProperties)
-            {
-                Console.WriteLine($"       {prop.Key}: {prop.Value}");
-            }
+            Console.WriteLine($"     Suit: {Suit}");
+            Console.WriteLine($"     Rank: {Rank}");
+            Console.WriteLine($"     Id: {Id}");
+            Console.WriteLine($"     Name: {Name}");
             Console.WriteLine($"     Current Area: {currentArea}");
         }
     }

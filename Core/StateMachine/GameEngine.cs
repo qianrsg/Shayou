@@ -12,6 +12,7 @@ namespace Bang.Core.StateMachine
         public GameEngine(BaseRuleset ruleset)
         {
             Context = new GameContext();
+            Context.Engine = this;
             Ruleset = ruleset;
         }
 
@@ -19,7 +20,7 @@ namespace Bang.Core.StateMachine
         {
             do
             {
-                Ruleset.EventHandler(gameEvent);
+                Ruleset.EventHandler(gameEvent, Context);
                 
                 if (!gameEvent.IsFinished())
                 {
@@ -30,8 +31,7 @@ namespace Bang.Core.StateMachine
 
         public void GameStart()
         {
-            Ruleset.Initialize(Context);
-            Ruleset.Pipeline(Context);
+            Ruleset.GameStart(Context);
         }
     }
 }

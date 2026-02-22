@@ -14,10 +14,8 @@ namespace Bang.Rulesets
 
         public abstract void Initialize(GameContext context);
 
-        public abstract void CheckWinCondition(GameContext context);
+        public abstract void EventHandler(Event gameEvent, GameContext context);
 
-        public abstract void EventHandler(Event gameEvent);
-
-        public abstract void Pipeline(GameContext context);
+        public abstract void GameStart(GameContext context);
     }
 }
