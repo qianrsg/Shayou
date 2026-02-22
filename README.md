@@ -8,31 +8,35 @@
 
 ```
 ├── Common/                         // 跨模块原子定义（不依赖其他任何模块）
-│   ├── Interfaces/                 // 基础契约：IEntity, IEffect, ITargetable
-│   └── Models/                     // 基础结构：Vector2(坐标), Color(阵营颜色)
+│   ├── Interfaces/                 // 基础契约：IEntity, IEffect, ITargetable, IAction, IComponent
+│   └── Models/                     // 基础结构：ActionResult, GameConfig
 │
 ├── Core/                           // 核心引擎大脑（纯逻辑，无UI，无具体规则）
 │   ├── Domain/                     // 实体层
-│   │   ├── Entities/               // Player(玩家基类), Card(卡牌基类), Deck(牌堆)
-│   │   └── Components/             // 组件：Health(血量), Equipment(装备槽), Range(射程)
-│   ├── Pipeline/                   // 核心动作链：处理"发起-响应-结算"嵌套逻辑
-│   ├── Services/                   // 通用服务：Distance(距离计算), Dealer(发牌器)
-│   └── StateMachine/               // 游戏主流程：回合流转状态机
+│   │   ├── Entities/               // Player(玩家), Card(卡牌), Pile(牌堆), Event(事件)
+│   │   └── Models/                 // GameContext(游戏上下文)
+│   └── StateMachine/               // 游戏主流程：GameEngine(游戏引擎)
 │
 ├── Rulesets/                       // 规则集插件（在此定义不同的衍生游戏）
+│   ├── BaseRuleset.cs             // 规则集基类
 │   ├── Shared/                     // 跨版本通用的逻辑
 │   │   └── Modes/                  // 模式引擎
-│   ├── Classic/                    // 经典 Bang! 规则零件
-│   └── ThreeKingdoms/              // 三国杀规则零件
+│   │       ├── IdentityMode.cs    // 身份模式
+│   │       ├── TeamMode.cs        // 团战模式
+│   │       └── Mode1v2.cs         // 1v2模式
+│   ├── Bang/                       // 经典 Bang! 规则
+│   │   └── BangRuleset.cs
+│   └── ThreeKingdoms/              // 三国杀规则
+│       └── SGSRuleset.cs
 │
 ├── Content/                        // 游戏内容填充（具体的数据实现）
-│   ├── Cards/                      // 具体卡牌类：Bang, Missed, Duel, 杀, 闪...
-│   └── Heroes/                     // 英雄技能类：Bart Cassidy, 曹操, 吕布...
+│   ├── Cards/                      // 具体卡牌类：Bang, Beer, Missed, Stagecoach
+│   └── Heroes/                     // 英雄技能类：AbilityBase, BartCassidy, SuzieLafayette
 │
 └── Infrastructure/                 // 基础设施层（支撑引擎运行的外围工具）
-    ├── Serialization/              // 存档/读档，GameState 转 JSON
-    ├── Network/                    // 消息封包、同步协议
-    └── Config/                     // 卡牌数值配置加载器（CSV/JSON）
+    ├── Serialization/              // 存档/读档，GameStateSerializer, JsonCardConverter
+    ├── Network/                    // 消息封包、同步协议：MessageBroker, Packet
+    └── Config/                     // 卡牌数值配置加载器：CardLoader, ResourceManifest
 ```
 
 ## 模块说明
@@ -48,37 +52,36 @@
 
 游戏引擎的核心逻辑层，纯逻辑实现，不包含UI和具体规则。
 
-- **Domain/Entities**: 定义游戏实体基类，如玩家、卡牌、牌堆等
-- **Domain/Components**: 定义实体组件，如血量、装备、射程等
-- **Pipeline**: 实现动作链系统，处理复杂的"发起-响应-结算"逻辑
-- **Services**: 提供通用服务，如距离计算、发牌器等
-- **StateMachine**: 实现游戏主流程的状态机，控制回合流转
+- **Domain/Entities**: 定义游戏实体，如玩家、卡牌、牌堆、事件等
+- **Domain/Models**: 定义游戏上下文，用于管理游戏状态
+- **StateMachine**: 实现游戏引擎，包含事件处理和游戏启动流程
 
 ### Rulesets（规则集层）
 
 插件化的规则集系统，支持不同的游戏变体。
 
+- **BaseRuleset**: 规则集基类，定义了规则集的核心接口和方法
 - **Shared**: 跨版本通用的逻辑，包含多种游戏模式引擎
   - **IdentityMode**: 经典身份模式，支持警匪、主臣反内等身份系统
   - **TeamMode**: 团战模式，支持队伍对抗玩法
-  - **1v2Mode**: 斗地主模式，支持1对2的不对称对战
-- **Classic**: 经典《Bang!》规则零件，包含警匪身份和胜负逻辑
-- **ThreeKingdoms**: 《三国杀》规则零件，包含主臣反内身份和勾玉系统
+  - **Mode1v2**: 斗地主模式，支持1对2的不对称对战
+- **Bang**: 经典《Bang!》规则实现，包含身份模式和胜负逻辑
+- **ThreeKingdoms**: 《三国杀》规则实现，包含主臣反内身份系统
 
 ### Content（内容层）
 
 具体游戏内容的实现，包括卡牌和英雄。
 
-- **Cards**: 具体的卡牌类实现，如Bang、Missed、Duel等
-- **Heroes**: 英雄技能类实现，包含各种英雄的被动和主动技能
+- **Cards**: 具体的卡牌类实现，如Bang、Beer、Missed、Stagecoach等
+- **Heroes**: 英雄技能类实现，包含技能基类和各种英雄的技能
 
 ### Infrastructure（基础设施层）
 
 支撑引擎运行的外围工具和服务。
 
-- **Serialization**: 提供游戏状态的序列化和反序列化功能
-- **Network**: 提供网络通信支持，包括消息封包和同步协议
-- **Config**: 提供配置加载功能，支持从CSV或JSON加载卡牌数值
+- **Serialization**: 提供游戏状态的序列化和反序列化功能，包括GameStateSerializer和JsonCardConverter
+- **Network**: 提供网络通信支持，包括消息代理MessageBroker和数据包Packet
+- **Config**: 提供配置加载功能，包括卡牌加载器CardLoader和资源清单ResourceManifest
 
 ## 设计原则
 
