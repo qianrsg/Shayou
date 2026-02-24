@@ -1,0 +1,858 @@
+{
+  "cards": [
+    {
+      "id": "taoyuanjieyi",
+      "suit": "hearts",
+      "rank": 1
+    },
+    {
+      "id": "wanjianqifa",
+      "suit": "hearts",
+      "rank": 1
+    },
+    {
+      "id": "wuxiekeji",
+      "suit": "hearts",
+      "rank": 1
+    },
+    {
+      "id": "tao",
+      "suit": "hearts",
+      "rank": 2
+    },
+    {
+      "id": "huogong",
+      "suit": "hearts",
+      "rank": 2
+    },
+    {
+      "id": "tao",
+      "suit": "hearts",
+      "rank": 2
+    },
+    {
+      "id": "tao",
+      "suit": "hearts",
+      "rank": 3
+    },
+    {
+      "id": "wugufengdeng",
+      "suit": "hearts",
+      "rank": 3
+    },
+    {
+      "id": "huogong",
+      "suit": "hearts",
+      "rank": 3
+    },
+    {
+      "id": "tao",
+      "suit": "hearts",
+      "rank": 4
+    },
+    {
+      "id": "wugufengdeng",
+      "suit": "hearts",
+      "rank": 4
+    },
+    {
+      "id": "sha",
+      "suit": "hearts",
+      "rank": 4,
+      "category": "fire"
+    },
+    {
+      "id": "chitu",
+      "suit": "hearts",
+      "rank": 5
+    },
+    {
+      "id": "qilingong",
+      "suit": "hearts",
+      "rank": 5
+    },
+    {
+      "id": "tao",
+      "suit": "hearts",
+      "rank": 5
+    },
+    {
+      "id": "tao",
+      "suit": "hearts",
+      "rank": 6
+    },
+    {
+      "id": "lebusishu",
+      "suit": "hearts",
+      "rank": 6
+    },
+    {
+      "id": "tao",
+      "suit": "hearts",
+      "rank": 6
+    },
+    {
+      "id": "tao",
+      "suit": "hearts",
+      "rank": 7
+    },
+    {
+      "id": "wushengyouyou",
+      "suit": "hearts",
+      "rank": 7
+    },
+    {
+      "id": "sha",
+      "suit": "hearts",
+      "rank": 7,
+      "category": "fire"
+    },
+    {
+      "id": "tao",
+      "suit": "hearts",
+      "rank": 8
+    },
+    {
+      "id": "wushengyouyou",
+      "suit": "hearts",
+      "rank": 8
+    },
+    {
+      "id": "shan",
+      "suit": "hearts",
+      "rank": 8
+    },
+    {
+      "id": "tao",
+      "suit": "hearts",
+      "rank": 9
+    },
+    {
+      "id": "wushengyouyou",
+      "suit": "hearts",
+      "rank": 9
+    },
+    {
+      "id": "shan",
+      "suit": "hearts",
+      "rank": 9
+    },
+    {
+      "id": "sha",
+      "suit": "hearts",
+      "rank": 10
+    },
+    {
+      "id": "sha",
+      "suit": "hearts",
+      "rank": 10
+    },
+    {
+      "id": "sha",
+      "suit": "hearts",
+      "rank": 10,
+      "category": "fire"
+    },
+    {
+      "id": "sha",
+      "suit": "hearts",
+      "rank": 11
+    },
+    {
+      "id": "wushengyouyou",
+      "suit": "hearts",
+      "rank": 11
+    },
+    {
+      "id": "shan",
+      "suit": "hearts",
+      "rank": 11
+    },
+    {
+      "id": "tao",
+      "suit": "hearts",
+      "rank": 12
+    },
+    {
+      "id": "guohechaiqiao",
+      "suit": "hearts",
+      "rank": 12
+    },
+    {
+      "id": "shan",
+      "suit": "hearts",
+      "rank": 12
+    },
+    {
+      "id": "shandian",
+      "suit": "hearts",
+      "rank": 12
+    },
+    {
+      "id": "shan",
+      "suit": "hearts",
+      "rank": 13
+    },
+    {
+      "id": "zhuanghuangfeidian",
+      "suit": "hearts",
+      "rank": 13
+    },
+    {
+      "id": "shan",
+      "suit": "hearts",
+      "rank": 13
+    },
+    {
+      "id": "zhugeliannu",
+      "suit": "diamonds",
+      "rank": 1
+    },
+    {
+      "id": "juedou",
+      "suit": "diamonds",
+      "rank": 1
+    },
+    {
+      "id": "zhuqueyushan",
+      "suit": "diamonds",
+      "rank": 1
+    },
+    {
+      "id": "tao",
+      "suit": "diamonds",
+      "rank": 2
+    },
+    {
+      "id": "sha",
+      "suit": "diamonds",
+      "rank": 2
+    },
+    {
+      "id": "sha",
+      "suit": "diamonds",
+      "rank": 2
+    },
+    {
+      "id": "baguazhen",
+      "suit": "diamonds",
+      "rank": 2
+    },
+    {
+      "id": "tengjia",
+      "suit": "diamonds",
+      "rank": 2
+    },
+    {
+      "id": "renwangdun",
+      "suit": "diamonds",
+      "rank": 2
+    },
+    {
+      "id": "shan",
+      "suit": "diamonds",
+      "rank": 3
+    },
+    {
+      "id": "shunshouqianyang",
+      "suit": "diamonds",
+      "rank": 3
+    },
+    {
+      "id": "tao",
+      "suit": "diamonds",
+      "rank": 3
+    },
+    {
+      "id": "shan",
+      "suit": "diamonds",
+      "rank": 4
+    },
+    {
+      "id": "shunshouqianyang",
+      "suit": "diamonds",
+      "rank": 4
+    },
+    {
+      "id": "sha",
+      "suit": "diamonds",
+      "rank": 4,
+      "category": "fire"
+    },
+    {
+      "id": "shan",
+      "suit": "diamonds",
+      "rank": 5
+    },
+    {
+      "id": "guanshifu",
+      "suit": "diamonds",
+      "rank": 5
+    },
+    {
+      "id": "sha",
+      "suit": "diamonds",
+      "rank": 5,
+      "category": "fire"
+    },
+    {
+      "id": "sha",
+      "suit": "diamonds",
+      "rank": 6
+    },
+    {
+      "id": "sha",
+      "suit": "diamonds",
+      "rank": 6
+    },
+    {
+      "id": "sha",
+      "suit": "diamonds",
+      "rank": 6
+    },
+    {
+      "id": "sha",
+      "suit": "diamonds",
+      "rank": 7
+    },
+    {
+      "id": "sha",
+      "suit": "diamonds",
+      "rank": 7
+    },
+    {
+      "id": "sha",
+      "suit": "diamonds",
+      "rank": 7
+    },
+    {
+      "id": "nanmanruqin",
+      "suit": "diamonds",
+      "rank": 7
+    },
+    {
+      "id": "sha",
+      "suit": "diamonds",
+      "rank": 8
+    },
+    {
+      "id": "sha",
+      "suit": "diamonds",
+      "rank": 8
+    },
+    {
+      "id": "sha",
+      "suit": "diamonds",
+      "rank": 8
+    },
+    {
+      "id": "sha",
+      "suit": "diamonds",
+      "rank": 9
+    },
+    {
+      "id": "shan",
+      "suit": "diamonds",
+      "rank": 9
+    },
+    {
+      "id": "jiu",
+      "suit": "diamonds",
+      "rank": 9
+    },
+    {
+      "id": "sha",
+      "suit": "diamonds",
+      "rank": 10
+    },
+    {
+      "id": "sha",
+      "suit": "diamonds",
+      "rank": 10
+    },
+    {
+      "id": "sha",
+      "suit": "diamonds",
+      "rank": 10
+    },
+    {
+      "id": "tiesuolianhuan",
+      "suit": "diamonds",
+      "rank": 10
+    },
+    {
+      "id": "sha",
+      "suit": "diamonds",
+      "rank": 11
+    },
+    {
+      "id": "sha",
+      "suit": "diamonds",
+      "rank": 11
+    },
+    {
+      "id": "sha",
+      "suit": "diamonds",
+      "rank": 11
+    },
+    {
+      "id": "tiesuolianhuan",
+      "suit": "diamonds",
+      "rank": 11
+    },
+    {
+      "id": "tao",
+      "suit": "diamonds",
+      "rank": 12
+    },
+    {
+      "id": "fangtianhuaji",
+      "suit": "diamonds",
+      "rank": 12
+    },
+    {
+      "id": "huogong",
+      "suit": "diamonds",
+      "rank": 12
+    },
+    {
+      "id": "shan",
+      "suit": "diamonds",
+      "rank": 12
+    },
+    {
+      "id": "sha",
+      "suit": "diamonds",
+      "rank": 13
+    },
+    {
+      "id": "zixinghuoliu",
+      "suit": "diamonds",
+      "rank": 13
+    },
+    {
+      "id": "jiedaosharen",
+      "suit": "diamonds",
+      "rank": 13
+    },
+    {
+      "id": "shan",
+      "suit": "diamonds",
+      "rank": 13
+    },
+    {
+      "id": "tiesuolianhuan",
+      "suit": "diamonds",
+      "rank": 13
+    },
+    {
+      "id": "zhugeliannu",
+      "suit": "clubs",
+      "rank": 1
+    },
+    {
+      "id": "juedou",
+      "suit": "clubs",
+      "rank": 1
+    },
+    {
+      "id": "baiyinshizi",
+      "suit": "clubs",
+      "rank": 1
+    },
+    {
+      "id": "cixiongshuanggujian",
+      "suit": "clubs",
+      "rank": 2
+    },
+    {
+      "id": "sha",
+      "suit": "clubs",
+      "rank": 2
+    },
+    {
+      "id": "baguazhen",
+      "suit": "clubs",
+      "rank": 2
+    },
+    {
+      "id": "tengjia",
+      "suit": "clubs",
+      "rank": 2
+    },
+    {
+      "id": "hanbingjian",
+      "suit": "clubs",
+      "rank": 2
+    },
+    {
+      "id": "shunshouqianyang",
+      "suit": "clubs",
+      "rank": 3
+    },
+    {
+      "id": "guohechaiqiao",
+      "suit": "clubs",
+      "rank": 3
+    },
+    {
+      "id": "jiu",
+      "suit": "clubs",
+      "rank": 3
+    },
+    {
+      "id": "sha",
+      "suit": "clubs",
+      "rank": 4
+    },
+    {
+      "id": "guohechaiqiao",
+      "suit": "clubs",
+      "rank": 4
+    },
+    {
+      "id": "bingliangcunduan",
+      "suit": "clubs",
+      "rank": 4
+    },
+    {
+      "id": "dilu",
+      "suit": "clubs",
+      "rank": 5
+    },
+    {
+      "id": "sha",
+      "suit": "clubs",
+      "rank": 5
+    },
+    {
+      "id": "sha",
+      "suit": "clubs",
+      "rank": 5,
+      "category": "thunder"
+    },
+    {
+      "id": "sha",
+      "suit": "clubs",
+      "rank": 6
+    },
+    {
+      "id": "lebusishu",
+      "suit": "clubs",
+      "rank": 6
+    },
+    {
+      "id": "sha",
+      "suit": "clubs",
+      "rank": 6,
+      "category": "thunder"
+    },
+    {
+      "id": "sha",
+      "suit": "clubs",
+      "rank": 7
+    },
+    {
+      "id": "nanmanruqin",
+      "suit": "clubs",
+      "rank": 7
+    },
+    {
+      "id": "sha",
+      "suit": "clubs",
+      "rank": 7,
+      "category": "thunder"
+    },
+    {
+      "id": "sha",
+      "suit": "clubs",
+      "rank": 8
+    },
+    {
+      "id": "sha",
+      "suit": "clubs",
+      "rank": 8
+    },
+    {
+      "id": "sha",
+      "suit": "clubs",
+      "rank": 8,
+      "category": "thunder"
+    },
+    {
+      "id": "sha",
+      "suit": "clubs",
+      "rank": 9
+    },
+    {
+      "id": "sha",
+      "suit": "clubs",
+      "rank": 9
+    },
+    {
+      "id": "jiu",
+      "suit": "clubs",
+      "rank": 9
+    },
+    {
+      "id": "sha",
+      "suit": "clubs",
+      "rank": 10
+    },
+    {
+      "id": "sha",
+      "suit": "clubs",
+      "rank": 10
+    },
+    {
+      "id": "bingliangcunduan",
+      "suit": "clubs",
+      "rank": 10
+    },
+    {
+      "id": "jiedaosharen",
+      "suit": "clubs",
+      "rank": 11
+    },
+    {
+      "id": "shan",
+      "suit": "clubs",
+      "rank": 11
+    },
+    {
+      "id": "tiesuolianhuan",
+      "suit": "clubs",
+      "rank": 11
+    },
+    {
+      "id": "jiedaosharen",
+      "suit": "clubs",
+      "rank": 12
+    },
+    {
+      "id": "shan",
+      "suit": "clubs",
+      "rank": 12
+    },
+    {
+      "id": "tiesuolianhuan",
+      "suit": "clubs",
+      "rank": 12
+    },
+    {
+      "id": "jiedaosharen",
+      "suit": "clubs",
+      "rank": 13
+    },
+    {
+      "id": "shan",
+      "suit": "clubs",
+      "rank": 13
+    },
+    {
+      "id": "tiesuolianhuan",
+      "suit": "clubs",
+      "rank": 13
+    },
+    {
+      "id": "shandian",
+      "suit": "spades",
+      "rank": 1
+    },
+    {
+      "id": "juedou",
+      "suit": "spades",
+      "rank": 1
+    },
+    {
+      "id": "gudingdao",
+      "suit": "spades",
+      "rank": 1
+    },
+    {
+      "id": "shunshouqianyang",
+      "suit": "spades",
+      "rank": 2
+    },
+    {
+      "id": "guohechaiqiao",
+      "suit": "spades",
+      "rank": 2
+    },
+    {
+      "id": "jiu",
+      "suit": "spades",
+      "rank": 2
+    },
+    {
+      "id": "shunshouqianyang",
+      "suit": "spades",
+      "rank": 3
+    },
+    {
+      "id": "guohechaiqiao",
+      "suit": "spades",
+      "rank": 3
+    },
+    {
+      "id": "jiu",
+      "suit": "spades",
+      "rank": 3
+    },
+    {
+      "id": "shunshouqianyang",
+      "suit": "spades",
+      "rank": 4
+    },
+    {
+      "id": "guohechaiqiao",
+      "suit": "spades",
+      "rank": 4
+    },
+    {
+      "id": "sha",
+      "suit": "spades",
+      "rank": 4,
+      "category": "thunder"
+    },
+    {
+      "id": "jueying",
+      "suit": "spades",
+      "rank": 5
+    },
+    {
+      "id": "qinglongyanyuedao",
+      "suit": "spades",
+      "rank": 5
+    },
+    {
+      "id": "sha",
+      "suit": "spades",
+      "rank": 5,
+      "category": "thunder"
+    },
+    {
+      "id": "qingganjian",
+      "suit": "spades",
+      "rank": 6
+    },
+    {
+      "id": "lebusishu",
+      "suit": "spades",
+      "rank": 6
+    },
+    {
+      "id": "sha",
+      "suit": "spades",
+      "rank": 6,
+      "category": "thunder"
+    },
+    {
+      "id": "sha",
+      "suit": "spades",
+      "rank": 7
+    },
+    {
+      "id": "nanmanruqin",
+      "suit": "spades",
+      "rank": 7
+    },
+    {
+      "id": "sha",
+      "suit": "spades",
+      "rank": 7,
+      "category": "thunder"
+    },
+    {
+      "id": "sha",
+      "suit": "spades",
+      "rank": 8
+    },
+    {
+      "id": "sha",
+      "suit": "spades",
+      "rank": 8
+    },
+    {
+      "id": "sha",
+      "suit": "spades",
+      "rank": 8,
+      "category": "thunder"
+    },
+    {
+      "id": "sha",
+      "suit": "spades",
+      "rank": 9
+    },
+    {
+      "id": "sha",
+      "suit": "spades",
+      "rank": 9
+    },
+    {
+      "id": "jiu",
+      "suit": "spades",
+      "rank": 9
+    },
+    {
+      "id": "sha",
+      "suit": "spades",
+      "rank": 10
+    },
+    {
+      "id": "sha",
+      "suit": "spades",
+      "rank": 10
+    },
+    {
+      "id": "tiesuolianhuan",
+      "suit": "spades",
+      "rank": 10
+    },
+    {
+      "id": "shunshouqianyang",
+      "suit": "spades",
+      "rank": 11
+    },
+    {
+      "id": "shan",
+      "suit": "spades",
+      "rank": 11
+    },
+    {
+      "id": "tiesuolianhuan",
+      "suit": "spades",
+      "rank": 11
+    },
+    {
+      "id": "zhangbashemao",
+      "suit": "spades",
+      "rank": 12
+    },
+    {
+      "id": "guohechaiqiao",
+      "suit": "spades",
+      "rank": 12
+    },
+    {
+      "id": "tiesuolianhuan",
+      "suit": "spades",
+      "rank": 12
+    },
+    {
+      "id": "nanmanruqin",
+      "suit": "spades",
+      "rank": 13
+    },
+    {
+      "id": "dayuan",
+      "suit": "spades",
+      "rank": 13
+    },
+    {
+      "id": "shan",
+      "suit": "spades",
+      "rank": 13
+    }
+  ]
+}

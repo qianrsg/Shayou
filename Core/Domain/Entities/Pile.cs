@@ -1,6 +1,9 @@
 using Bang.Core.Domain.Entities;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Bang.Core.Domain.Entities
 {
@@ -13,12 +16,27 @@ namespace Bang.Core.Domain.Entities
             piles = new Dictionary<string, List<Card>>();
         }
 
+        public void CreatePile(string pileName)
+        {
+            if (!piles.ContainsKey(pileName))
+            {
+                piles[pileName] = new List<Card>();
+            }
+        }
+
+        public void CreatePilePair(string pileName)
+        {
+            CreatePile($"{pileName}_Deck");
+            CreatePile($"{pileName}_Discard");
+        }
+
         public void AddCard(string pileName, Card card)
         {
             if (!piles.ContainsKey(pileName))
             {
                 piles[pileName] = new List<Card>();
             }
+            card.PileName = pileName;
             piles[pileName].Add(card);
         }
 
@@ -27,6 +45,10 @@ namespace Bang.Core.Domain.Entities
             if (!piles.ContainsKey(pileName))
             {
                 piles[pileName] = new List<Card>();
+            }
+            foreach (var card in newCards)
+            {
+                card.PileName = pileName;
             }
             piles[pileName].AddRange(newCards);
         }
@@ -112,9 +134,9 @@ namespace Bang.Core.Domain.Entities
             return piles.ContainsKey(pileName) ? piles[pileName].Count : 0;
         }
 
-        public List<Card> GetAllCards(string pileName)
+        public List<Card> GetPile(string pileName)
         {
-            return piles.ContainsKey(pileName) ? new List<Card>(piles[pileName]) : new List<Card>();
+            return piles.ContainsKey(pileName) ? piles[pileName] : new List<Card>();
         }
 
         public List<string> GetAllPileNames()
@@ -131,5 +153,46 @@ namespace Bang.Core.Domain.Entities
             }
             return total;
         }
+
+        public void LoadFromJson(string filePath, string pileName)
+        {
+            if (!File.Exists(filePath))
+            {
+                Console.WriteLine($"File not found: {filePath}");
+                return;
+            }
+
+            string json = File.ReadAllText(filePath);
+            var config = JsonSerializer.Deserialize<CardConfig>(json);
+            
+            if (config != null && config.Cards != null)
+            {
+                foreach (var cardConfig in config.Cards)
+                {
+                    Card card = new Card(cardConfig.Suit, cardConfig.Rank, cardConfig.Id, cardConfig.Id);
+                    card.Category = cardConfig.Category ?? "";
+                    AddCard(pileName, card);
+                }
+                Console.WriteLine($"Loaded {config.Cards.Count} cards from {filePath} to {pileName}");
+            }
+        }
+    }
+
+    public class CardConfig
+    {
+        [JsonPropertyName("cards")]
+        public List<CardData> Cards { get; set; }
+    }
+
+    public class CardData
+    {
+        [JsonPropertyName("id")]
+        public string Id { get; set; }
+        [JsonPropertyName("suit")]
+        public string Suit { get; set; }
+        [JsonPropertyName("rank")]
+        public int Rank { get; set; }
+        [JsonPropertyName("category")]
+        public string Category { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Bang.Core.Domain.Models;
 
 namespace Bang.Core.Domain.Entities
 {
@@ -13,6 +14,8 @@ namespace Bang.Core.Domain.Entities
         public List<Card> Judgement { get; private set; }
         public List<string> Skills { get; private set; }
         public List<string> TurnPhase { get; private set; }
+        public string Pile { get; set; }
+        public GameContext Context { get; set; }
 
         public Player()
         {
@@ -134,6 +137,39 @@ namespace Bang.Core.Domain.Entities
         public List<string> GetAllSkills()
         {
             return new List<string>(Skills);
+        }
+
+        public void Draw(int count = 1)
+        {
+            List<Card> cards = Context.Piles.DrawCards($"{Pile}_Deck", count);
+            List<Card> deck = Context.Piles.GetPile($"{Pile}_Deck");
+            Event moveCardEvent = new Event("MoveCard");
+            moveCardEvent.SourcePlayer = this;
+            moveCardEvent.Cards = cards;
+            moveCardEvent.SourceContainer = deck;
+            moveCardEvent.TargetContainer = Hand;
+            Context.CreateEvent(moveCardEvent);
+        }
+
+        public void Discard(Card card)
+        {
+            Event moveCardEvent = new Event("MoveCard");
+            moveCardEvent.SourcePlayer = this;
+            moveCardEvent.Cards = new List<Card> { card };
+            moveCardEvent.SourceContainer = Hand;
+            moveCardEvent.TargetContainer = Context.Piles.GetPile($"{Pile}_Discard");
+            Context.CreateEvent(moveCardEvent);
+        }
+
+        public void Discard(List<Card> cards)
+        {
+            List<Card> discardPile = Context.Piles.GetPile($"{Pile}_Discard");
+            Event moveCardEvent = new Event("MoveCard");
+            moveCardEvent.SourcePlayer = this;
+            moveCardEvent.Cards = cards;
+            moveCardEvent.SourceContainer = Hand;
+            moveCardEvent.TargetContainer = discardPile;
+            Context.CreateEvent(moveCardEvent);
         }
 
         public void PrintInfo()
