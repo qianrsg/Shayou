@@ -16,7 +16,7 @@ namespace Bang.Rulesets.Bang
             Console.WriteLine("   Setting up game with " + context.Players.Count + " players");
         }
 
-        public override void EventHandler(Event gameEvent, GameContext context)
+        public override void EventHandler(BaseEvent gameEvent, GameContext context)
         {
             Console.WriteLine("Handling events for Bang ruleset");
             Console.WriteLine("   Processing card effects and abilities");
