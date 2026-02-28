@@ -11,7 +11,7 @@ namespace Bang.Core.Domain.Entities
         public List<Card> TargetContainer { get; set; }
         public Dictionary<string, object> Data { get; set; }
         public int Num { get; set; }
-        public string Process { get; protected set; }
+        public string Timing { get; protected set; }
         public Action<BaseEvent> Callback { get; set; }
 
         protected BaseEvent()
@@ -25,7 +25,7 @@ namespace Bang.Core.Domain.Entities
             TargetContainer = null;
             Data = new Dictionary<string, object>();
             Num = 0;
-            Process = "Entering";
+            Timing = "Entering";
         }
 
         protected BaseEvent(string name)
@@ -39,19 +39,19 @@ namespace Bang.Core.Domain.Entities
             TargetContainer = null;
             Data = new Dictionary<string, object>();
             Num = 0;
-            Process = "Entering";
+            Timing = "Entering";
         }
 
         public abstract void AdvanceProcess();
 
         public bool IsEnd()
         {
-            return Process == "End";
+            return Timing == "End";
         }
 
         public void Cancel()
         {
-            Process = "Cancelled";
+            Timing = "Cancelled";
         }
     }
 }

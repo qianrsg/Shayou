@@ -13,7 +13,7 @@ namespace Bang.Core.Domain.Entities
             TargetContainer = null;
             Data = new Dictionary<string, object>();
             Num = 0;
-            Process = "Entering";
+            Timing = "Entering";
         }
 
         public AtomicEvent(string name)
@@ -27,19 +27,19 @@ namespace Bang.Core.Domain.Entities
             TargetContainer = null;
             Data = new Dictionary<string, object>();
             Num = 0;
-            Process = "Entering";
+            Timing = "Entering";
         }
 
         public override void AdvanceProcess()
         {
-            if (Process == "Entering")
+            if (Timing == "Entering")
             {
                 Callback?.Invoke(this);
-                Process = "Finished";
+                Timing = "Finished";
             }
             else
             {
-                Process = "End";
+                Timing = "End";
             }
         }
     }

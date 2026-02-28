@@ -11,8 +11,8 @@ namespace Bang.Rulesets.ThreeKingdoms
     public class SGSRuleset : BaseRuleset
     {
         private readonly List<string> _playerTurnPhases;
-        private Dictionary<string, Action<BaseEvent, GameContext>> _eventHandlers;
-        private IContext _context;
+        private Dictionary<string, Action<BaseEvent>> _eventHandlers;
+        private Dictionary<string, Action<BaseEvent>> _eventCallbacks;
 
         public SGSRuleset() : base("sgs")
         {
@@ -27,82 +27,95 @@ namespace Bang.Rulesets.ThreeKingdoms
             };
 
             InitializeEventHandlers();
+            InitializeEventCallbacks();
         }
 
-        // ---------- 游戏初始化 ----------
-        public override void Initialize(GameContext context)
+        public override void Initialize()
         {
-            _context = context;
-
             Console.WriteLine("Initializing SGS ruleset");
-            Console.WriteLine($"   Setting up game with {context.Players.Count} players");
+            Console.WriteLine($"   Setting up game with {Context.GetPlayers().Count} players");
         }
 
-        public override void GameStart(GameContext context)
+        public override void GameStart()
         {
+            Context.CreateArea("Public_Deck");
+            Context.CreateArea("Public_Discard");
+
             for (int i = 0; i < 8; i++)
             {
                 var player = new Player(4, i, $"Player{i + 1}")
                 {
-                    Context = context,
-                    Pile = "Public",
+                    Context = Context,
+                    DeckName = "Public",
                     MaxHealth = 4,
                     Health = 4
                 };
+                player.InitializeAreas();
 
-                context.Players.Add(player);
+                Context.GetPlayers().Add(player);
             }
 
-            var gameEvent = new Event("Game")
-            {
-                Callback = OnGameCallback
-            };
-
-            context.CreateEvent(gameEvent);
+            var gameEvent = new Event("Game");
+            Context.CreateEvent(gameEvent);
         }
 
         private void InitializeEventHandlers()
         {
-            _eventHandlers = new Dictionary<string, Action<BaseEvent, GameContext>>
+            _eventHandlers = new Dictionary<string, Action<BaseEvent>>
             {
                 { "Game_Entering", HandleGameEntering },
                 { "PlayerTurn_Entering", HandlePlayerTurnEntering }
             };
         }
 
-        public override void EventHandler(BaseEvent gameEvent, GameContext context)
+        private void InitializeEventCallbacks()
         {
-            string indent = new string(' ', context.Engine.StackDepth * 2);
+            _eventCallbacks = new Dictionary<string, Action<BaseEvent>>
+            {
+                { "Game", OnGameCallback },
+                { "Round", OnRoundCallback },
+                { "PlayerTurn", OnPlayerTurnCallback },
+                { "DrawPhase", OnDrawPhaseCallback },
+                { "Draw", OnDrawCallback }
+            };
+        }
+
+        public override void PrepareEvent(BaseEvent gameEvent)
+        {
+            if (_eventCallbacks.TryGetValue(gameEvent.Name, out var callback))
+            {
+                gameEvent.Callback = callback;
+            }
+        }
+
+        public override void EventHandler(BaseEvent gameEvent)
+        {
+            string indent = new string(' ', Engine.StackDepth * 2);
 
             Console.WriteLine(
-                $"{indent}Event: {gameEvent.Name}, Process: {gameEvent.Process}");
+                $"{indent}Event: {gameEvent.Name}, Timing: {gameEvent.Timing}");
 
-            string handlerKey = $"{gameEvent.Name}_{gameEvent.Process}";
+            string handlerKey = $"{gameEvent.Name}_{gameEvent.Timing}";
 
             if (_eventHandlers.TryGetValue(handlerKey, out var handler))
             {
                 Thread.Sleep(10);
-                handler(gameEvent, context);
+                handler(gameEvent);
             }
         }
 
-        // ---------- 游戏流程回调 ----------
         private void OnGameCallback(BaseEvent e)
         {
-            var roundEvent = new Event("Round")
-            {
-                Callback = OnRoundCallback
-            };
-
-            _context.CreateEvent(roundEvent);
+            var roundEvent = new Event("Round");
+            Context.CreateEvent(roundEvent);
         }
 
         private void OnRoundCallback(BaseEvent e)
         {
-            int newRound = _context.GetRound() + 1;
-            _context.SetRound(newRound);
+            int newRound = Context.GetRound() + 1;
+            Context.SetRound(newRound);
 
-            var players = _context.GetPlayers();
+            var players = Context.GetPlayers();
             int playerCount = players.Count;
 
             Player currentPlayer = players
@@ -111,19 +124,15 @@ namespace Bang.Rulesets.ThreeKingdoms
             if (currentPlayer == null)
                 return;
 
-            _context.SetCurrentPlayer(currentPlayer);
+            Context.SetCurrentPlayer(currentPlayer);
 
-            var playerTurnEvent = new Event("PlayerTurn")
-            {
-                Callback = OnPlayerTurnCallback
-            };
-
-            _context.CreateEvent(playerTurnEvent);
+            var playerTurnEvent = new Event("PlayerTurn");
+            Context.CreateEvent(playerTurnEvent);
         }
 
         private void OnPlayerTurnCallback(BaseEvent pe)
         {
-            Player currentPlayer = _context.GetCurrentPlayer();
+            Player currentPlayer = Context.GetCurrentPlayer();
 
             if (currentPlayer?.TurnPhase == null)
                 return;
@@ -135,19 +144,18 @@ namespace Bang.Rulesets.ThreeKingdoms
 
                 var phaseEvent = new Event(currentPhase);
 
-                if (currentPhase == "Draw")
+                if (currentPhase == "DrawPhase")
                 {
                     phaseEvent.Num = 2;
-                    phaseEvent.Callback = OnDrawCallback;
                 }
 
-                _context.CreateEvent(phaseEvent);
+                Context.CreateEvent(phaseEvent);
             }
         }
 
-        private void OnDrawCallback(BaseEvent de)
+        private void OnDrawPhaseCallback(BaseEvent de)
         {
-            Player currentPlayer = _context.GetCurrentPlayer();
+            Player currentPlayer = Context.GetCurrentPlayer();
 
             if (currentPlayer != null && de.Num > 0)
             {
@@ -155,35 +163,50 @@ namespace Bang.Rulesets.ThreeKingdoms
             }
         }
 
-        // ---------- 事件处理器 ----------
-        private void HandleGameEntering(BaseEvent gameEvent, GameContext context)
+        private void OnDrawCallback(BaseEvent de)
         {
-            context.Piles.CreatePilePair("Public");
+            Player player = de.SourcePlayer;
+            if (player == null || de.Num <= 0)
+                return;
 
-            context.Piles.LoadFromJson(
+            string deckName = player.DeckName;
+            List<Card> cards = Context.DrawTopCard($"{deckName}_Deck", de.Num);
+            List<Card> deck = Context.GetArea($"{deckName}_Deck");
+
+            Console.WriteLine($"[{player.HeroName}] 摸牌 {cards.Count} 张:");
+            foreach (var card in cards)
+            {
+                Console.WriteLine($"  - {card.Suit}{card.Rank} {card.Name}");
+            }
+
+            Engine.MoveCards(cards, deck, player.GetHand());
+        }
+
+        private void HandleGameEntering(BaseEvent gameEvent)
+        {
+            Context.LoadCardsFromJson(
                 "Config/Piles/standard.json",
                 "Public_Deck");
 
-            context.Piles.Shuffle("Public_Deck");
+            Context.Shuffle("Public_Deck");
 
-            foreach (var player in context.Players)
+            foreach (var player in Context.GetPlayers())
             {
                 player.Draw(4);
             }
         }
 
-        private void HandlePlayerTurnEntering(
-            BaseEvent gameEvent,
-            GameContext context)
+        private void HandlePlayerTurnEntering(BaseEvent gameEvent)
         {
-            if (context.CurrentPlayer == null)
+            Player currentPlayer = Context.GetCurrentPlayer();
+            if (currentPlayer == null)
                 return;
 
-            context.CurrentPlayer.TurnPhase.Clear();
+            currentPlayer.TurnPhase.Clear();
 
             foreach (string phase in _playerTurnPhases)
             {
-                context.CurrentPlayer.TurnPhase.Add(phase);
+                currentPlayer.TurnPhase.Add(phase);
             }
         }
     }

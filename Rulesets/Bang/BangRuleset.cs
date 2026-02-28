@@ -10,21 +10,21 @@ namespace Bang.Rulesets.Bang
         {
         }
 
-        public override void Initialize(GameContext context)
+        public override void Initialize()
         {
             Console.WriteLine("Initializing Bang ruleset");
-            Console.WriteLine("   Setting up game with " + context.Players.Count + " players");
+            Console.WriteLine("   Setting up game with " + Context.GetPlayers().Count + " players");
         }
 
-        public override void EventHandler(BaseEvent gameEvent, GameContext context)
+        public override void EventHandler(BaseEvent gameEvent)
         {
             Console.WriteLine("Handling events for Bang ruleset");
             Console.WriteLine("   Processing card effects and abilities");
         }
 
-        public override void GameStart(GameContext context)
+        public override void GameStart()
         {
-            Initialize(context);
+            Initialize();
         }
     }
 }

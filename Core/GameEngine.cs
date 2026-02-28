@@ -18,29 +18,32 @@ namespace Bang.Core.StateMachine
             Context = new GameContext();
             Context.Engine = this;
             Ruleset = ruleset;
-            Ruleset.Initialize(Context);
+            Ruleset.Engine = this;
+            Ruleset.Context = Context;
+            Ruleset.Initialize();
             eventStack = new Stack<BaseEvent>();
             StackDepth = 0;
         }
 
         public void CreateEvent(BaseEvent gameEvent)
         {
+            Ruleset.PrepareEvent(gameEvent);
             eventStack.Push(gameEvent);
             StackDepth++;
-            
+
             while (!gameEvent.IsEnd())
             {
-                Ruleset.EventHandler(gameEvent, Context);
+                Ruleset.EventHandler(gameEvent);
                 gameEvent.AdvanceProcess();
             }
-            
+
             eventStack.Pop();
             StackDepth--;
         }
 
         public void GameStart()
         {
-            Thread gameThread = new Thread(() => Ruleset.GameStart(Context));
+            Thread gameThread = new Thread(() => Ruleset.GameStart());
             gameThread.Start();
         }
 
@@ -61,6 +64,23 @@ namespace Bang.Core.StateMachine
             AtomicEvent atomicEvent = new AtomicEvent("MoveCard");
             atomicEvent.Data["Source"] = source;
             atomicEvent.Data["Target"] = target;
+            CreateEvent(atomicEvent);
+        }
+
+        public void MoveCards(List<Card> cards, List<Card> source, List<Card> target)
+        {
+            AtomicEvent atomicEvent = new AtomicEvent("MoveCards");
+            atomicEvent.Cards = cards;
+            atomicEvent.SourceContainer = source;
+            atomicEvent.TargetContainer = target;
+            atomicEvent.Callback = (e) =>
+            {
+                foreach (var card in cards)
+                {
+                    source.Remove(card);
+                    target.Add(card);
+                }
+            };
             CreateEvent(atomicEvent);
         }
 

@@ -13,7 +13,7 @@ namespace Bang.Core.Domain.Entities
             TargetContainer = null;
             Data = new Dictionary<string, object>();
             Num = 0;
-            Process = "Entering";
+            Timing = "Entering";
         }
 
         public Event(string name)
@@ -27,31 +27,31 @@ namespace Bang.Core.Domain.Entities
             TargetContainer = null;
             Data = new Dictionary<string, object>();
             Num = 0;
-            Process = "Entering";
+            Timing = "Entering";
         }
 
         public override void AdvanceProcess()
         {
-            if (Process == "Entering")
+            if (Timing == "Entering")
             {
-                Process = "Processing";
+                Timing = "Processing";
             }
-            else if (Process == "Processing")
+            else if (Timing == "Processing")
             {
                 Callback?.Invoke(this);
-                Process = "Processed";
+                Timing = "Processed";
             }
-            else if (Process == "Processed")
+            else if (Timing == "Processed")
             {
-                Process = "Finished";
+                Timing = "Finished";
             }
-            else if (Process == "Finished")
+            else if (Timing == "Finished")
             {
-                Process = "Exiting";
+                Timing = "Exiting";
             }
             else 
             {
-                Process = "End";
+                Timing = "End";
             }
         }
     }

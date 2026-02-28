@@ -10,12 +10,12 @@ namespace Bang.Core.Domain.Entities
         public string HeroName { get; set; }
         public int MaxHealth { get; set; }
         public int Armor { get; set; }
-        public List<Card> Hand { get; private set; }
-        public Dictionary<string, Card> Equipment { get; private set; }
-        public List<Card> Judgement { get; private set; }
+        public string HandAreaName { get; private set; }
+        public string EquipmentAreaName { get; private set; }
+        public string JudgementAreaName { get; private set; }
         public List<string> Skills { get; private set; }
         public List<string> TurnPhase { get; private set; }
-        public string Pile { get; set; }
+        public string DeckName { get; set; }
         public IContext Context { get; set; }
 
         public Player()
@@ -25,9 +25,6 @@ namespace Bang.Core.Domain.Entities
             HeroName = "";
             MaxHealth = 0;
             Armor = 0;
-            Hand = new List<Card>();
-            Equipment = new Dictionary<string, Card>();
-            Judgement = new List<Card>();
             Skills = new List<string>();
             TurnPhase = new List<string>();
         }
@@ -39,16 +36,40 @@ namespace Bang.Core.Domain.Entities
             HeroName = heroName;
             MaxHealth = health;
             Armor = 0;
-            Hand = new List<Card>();
-            Equipment = new Dictionary<string, Card>();
-            Judgement = new List<Card>();
             Skills = new List<string>();
             TurnPhase = new List<string>();
+        }
+
+        public void InitializeAreas()
+        {
+            HandAreaName = $"Player{Position}_Hand";
+            EquipmentAreaName = $"Player{Position}_Equipment";
+            JudgementAreaName = $"Player{Position}_Judgement";
+
+            Context.CreateArea(HandAreaName);
+            Context.CreateArea(EquipmentAreaName);
+            Context.CreateArea(JudgementAreaName);
+        }
+
+        public List<Card> GetHand()
+        {
+            return Context.GetArea(HandAreaName);
+        }
+
+        public List<Card> GetEquipment()
+        {
+            return Context.GetArea(EquipmentAreaName);
+        }
+
+        public List<Card> GetJudgement()
+        {
+            return Context.GetArea(JudgementAreaName);
         }
 
         public void Draw(int count = 1)
         {
             Event drawEvent = new Event("Draw");
+            drawEvent.SourcePlayer = this;
             drawEvent.Num = count;
             Context.CreateEvent(drawEvent);
         }

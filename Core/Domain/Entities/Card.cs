@@ -7,7 +7,7 @@ namespace Bang.Core.Domain.Entities
         public string Id { get; set; }
         public string Name { get; set; }
         public string Category { get; set; }
-        public string PileName { get; set; }
+        public string AreaName { get; set; }
         private string currentArea;
 
         public Card()
@@ -17,7 +17,7 @@ namespace Bang.Core.Domain.Entities
             Id = "";
             Name = "";
             Category = "";
-            PileName = "";
+            AreaName = "";
             currentArea = "";
         }
 
@@ -28,7 +28,7 @@ namespace Bang.Core.Domain.Entities
             Id = id;
             Name = name;
             Category = "";
-            PileName = "";
+            AreaName = "";
             currentArea = "";
         }
 
