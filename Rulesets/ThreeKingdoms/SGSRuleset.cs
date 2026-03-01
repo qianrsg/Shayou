@@ -1,12 +1,11 @@
-using Bang.Core.Domain.Entities;
-using Bang.Core.Domain.Models;
-using Bang.Rulesets;
+using Shayou.Core.Domain.Entities;
+using Shayou.Rulesets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
-namespace Bang.Rulesets.ThreeKingdoms
+namespace Shayou.Rulesets.ThreeKingdoms
 {
     public class SGSRuleset : BaseRuleset
     {
@@ -33,30 +32,30 @@ namespace Bang.Rulesets.ThreeKingdoms
         public override void Initialize()
         {
             Console.WriteLine("Initializing SGS ruleset");
-            Console.WriteLine($"   Setting up game with {Context.GetPlayers().Count} players");
+            Console.WriteLine($"   Setting up game with {Engine.Context.Players.Count} players");
         }
 
         public override void GameStart()
         {
-            Context.CreateArea("Public_Deck");
-            Context.CreateArea("Public_Discard");
+            Engine.Context.Zone.CreateArea("Public_Deck");
+            Engine.Context.Zone.CreateArea("Public_Discard");
 
             for (int i = 0; i < 8; i++)
             {
                 var player = new Player(4, i, $"Player{i + 1}")
                 {
-                    Context = Context,
+                    Context = Engine.Context,
                     DeckName = "Public",
                     MaxHealth = 4,
                     Health = 4
                 };
                 player.InitializeAreas();
 
-                Context.GetPlayers().Add(player);
+                Engine.Context.Players.Add(player);
             }
 
             var gameEvent = new Event("Game");
-            Context.CreateEvent(gameEvent);
+            Engine.Context.CreateEvent(gameEvent);
         }
 
         private void InitializeEventHandlers()
@@ -76,7 +75,8 @@ namespace Bang.Rulesets.ThreeKingdoms
                 { "Round", OnRoundCallback },
                 { "PlayerTurn", OnPlayerTurnCallback },
                 { "DrawPhase", OnDrawPhaseCallback },
-                { "Draw", OnDrawCallback }
+                { "PlayPhase", OnPlayPhaseCallback },
+                { "Draw", OnDrawCallback },
             };
         }
 
@@ -107,15 +107,15 @@ namespace Bang.Rulesets.ThreeKingdoms
         private void OnGameCallback(BaseEvent e)
         {
             var roundEvent = new Event("Round");
-            Context.CreateEvent(roundEvent);
+            Engine.Context.CreateEvent(roundEvent);
         }
 
         private void OnRoundCallback(BaseEvent e)
         {
-            int newRound = Context.GetRound() + 1;
-            Context.SetRound(newRound);
+            int newRound = Engine.Context.Round + 1;
+            Engine.Context.Round = newRound;
 
-            var players = Context.GetPlayers();
+            var players = Engine.Context.Players;
             int playerCount = players.Count;
 
             Player currentPlayer = players
@@ -124,15 +124,15 @@ namespace Bang.Rulesets.ThreeKingdoms
             if (currentPlayer == null)
                 return;
 
-            Context.SetCurrentPlayer(currentPlayer);
+            Engine.Context.CurrentPlayer = currentPlayer;
 
             var playerTurnEvent = new Event("PlayerTurn");
-            Context.CreateEvent(playerTurnEvent);
+            Engine.Context.CreateEvent(playerTurnEvent);
         }
 
         private void OnPlayerTurnCallback(BaseEvent pe)
         {
-            Player currentPlayer = Context.GetCurrentPlayer();
+            Player currentPlayer = Engine.Context.CurrentPlayer;
 
             if (currentPlayer?.TurnPhase == null)
                 return;
@@ -149,13 +149,13 @@ namespace Bang.Rulesets.ThreeKingdoms
                     phaseEvent.Num = 2;
                 }
 
-                Context.CreateEvent(phaseEvent);
+                Engine.Context.CreateEvent(phaseEvent);
             }
         }
 
         private void OnDrawPhaseCallback(BaseEvent de)
         {
-            Player currentPlayer = Context.GetCurrentPlayer();
+            Player currentPlayer = Engine.Context.CurrentPlayer;
 
             if (currentPlayer != null && de.Num > 0)
             {
@@ -170,8 +170,8 @@ namespace Bang.Rulesets.ThreeKingdoms
                 return;
 
             string deckName = player.DeckName;
-            List<Card> cards = Context.DrawTopCard($"{deckName}_Deck", de.Num);
-            List<Card> deck = Context.GetArea($"{deckName}_Deck");
+            List<Card> cards = Engine.Context.Zone.DrawTopCard($"{deckName}_Deck", de.Num);
+            List<Card> deck = Engine.Context.Zone.GetArea($"{deckName}_Deck");
 
             Console.WriteLine($"[{player.HeroName}] 摸牌 {cards.Count} 张:");
             foreach (var card in cards)
@@ -179,18 +179,18 @@ namespace Bang.Rulesets.ThreeKingdoms
                 Console.WriteLine($"  - {card.Suit}{card.Rank} {card.Name}");
             }
 
-            Engine.MoveCards(cards, deck, player.GetHand());
+            Engine.MoveCard(cards, deck, player.GetHand());
         }
 
         private void HandleGameEntering(BaseEvent gameEvent)
         {
-            Context.LoadCardsFromJson(
+            Engine.Context.Zone.LoadFromJson(
                 "Config/Piles/standard.json",
                 "Public_Deck");
 
-            Context.Shuffle("Public_Deck");
+            Engine.Context.Zone.Shuffle("Public_Deck");
 
-            foreach (var player in Context.GetPlayers())
+            foreach (var player in Engine.Context.Players)
             {
                 player.Draw(4);
             }
@@ -198,7 +198,7 @@ namespace Bang.Rulesets.ThreeKingdoms
 
         private void HandlePlayerTurnEntering(BaseEvent gameEvent)
         {
-            Player currentPlayer = Context.GetCurrentPlayer();
+            Player currentPlayer = Engine.Context.CurrentPlayer;
             if (currentPlayer == null)
                 return;
 
@@ -207,6 +207,16 @@ namespace Bang.Rulesets.ThreeKingdoms
             foreach (string phase in _playerTurnPhases)
             {
                 currentPlayer.TurnPhase.Add(phase);
+            }
+        }
+
+        private void OnPlayPhaseCallback(BaseEvent e)
+        {
+            while (true) {
+                Console.WriteLine("等待玩家输入，按任意键继续...");
+                string input = Engine.WaitForInput();
+                Console.WriteLine($"收到输入: {input}");
+                if (input == "pass") break;
             }
         }
     }

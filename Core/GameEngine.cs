@@ -1,15 +1,16 @@
-using Bang.Core.Domain.Entities;
-using Bang.Core.Domain.Models;
-using Bang.Rulesets;
+using Shayou.Core.Domain.Entities;
+using Shayou.Core.Domain.Models;
+using Shayou.Infrastructure.Interaction;
+using Shayou.Rulesets;
 using System.Collections.Generic;
-using System.Threading;
 
-namespace Bang.Core.StateMachine
+namespace Shayou.Core.StateMachine
 {
     public class GameEngine
     {
         public GameContext Context { get; private set; }
         public BaseRuleset Ruleset { get; private set; }
+        public InputManager InputManager { get; private set; }
         private Stack<BaseEvent> eventStack;
         public int StackDepth { get; private set; }
 
@@ -19,10 +20,10 @@ namespace Bang.Core.StateMachine
             Context.Engine = this;
             Ruleset = ruleset;
             Ruleset.Engine = this;
-            Ruleset.Context = Context;
             Ruleset.Initialize();
             eventStack = new Stack<BaseEvent>();
             StackDepth = 0;
+            InputManager = new InputManager();
         }
 
         public void CreateEvent(BaseEvent gameEvent)
@@ -59,17 +60,9 @@ namespace Bang.Core.StateMachine
             CreateEvent(atomicEvent);
         }
 
-        public void MoveCard(string source, string target)
+        public void MoveCard(List<Card> cards, List<Card> source, List<Card> target)
         {
             AtomicEvent atomicEvent = new AtomicEvent("MoveCard");
-            atomicEvent.Data["Source"] = source;
-            atomicEvent.Data["Target"] = target;
-            CreateEvent(atomicEvent);
-        }
-
-        public void MoveCards(List<Card> cards, List<Card> source, List<Card> target)
-        {
-            AtomicEvent atomicEvent = new AtomicEvent("MoveCards");
             atomicEvent.Cards = cards;
             atomicEvent.SourceContainer = source;
             atomicEvent.TargetContainer = target;
@@ -106,6 +99,16 @@ namespace Bang.Core.StateMachine
                 player.Armor += num;
             };
             CreateEvent(atomicEvent);
+        }
+
+        public void PostInput(string input)
+        {
+            InputManager.PostInput(input);
+        }
+
+        public string WaitForInput()
+        {
+            return InputManager.WaitForInput();
         }
     }
 }

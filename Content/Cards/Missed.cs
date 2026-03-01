@@ -1,4 +1,4 @@
-namespace Bang.Content.Cards
+namespace Shayou.Content.Cards
 {
     public class Missed
     {

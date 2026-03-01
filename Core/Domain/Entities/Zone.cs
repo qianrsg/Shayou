@@ -4,7 +4,7 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Bang.Core.Domain.Entities
+namespace Shayou.Core.Domain.Entities
 {
     public class Zone
     {

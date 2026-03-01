@@ -1,8 +1,7 @@
-using Bang.Core.Domain.Entities;
-using Bang.Core.Domain.Models;
-using Bang.Rulesets;
+using Shayou.Core.Domain.Entities;
+using Shayou.Rulesets;
 
-namespace Bang.Rulesets.Bang
+namespace Shayou.Rulesets.Bang
 {
     public class BangRuleset : BaseRuleset
     {
@@ -13,7 +12,7 @@ namespace Bang.Rulesets.Bang
         public override void Initialize()
         {
             Console.WriteLine("Initializing Bang ruleset");
-            Console.WriteLine("   Setting up game with " + Context.GetPlayers().Count + " players");
+            Console.WriteLine("   Setting up game with " + Engine.Context.Players.Count + " players");
         }
 
         public override void EventHandler(BaseEvent gameEvent)

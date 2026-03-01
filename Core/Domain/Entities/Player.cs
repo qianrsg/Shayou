@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using Bang.Core.Domain.Models;
+using Shayou.Core.Domain.Models;
 
-namespace Bang.Core.Domain.Entities
+namespace Shayou.Core.Domain.Entities
 {
     public class Player
     {
@@ -16,7 +16,7 @@ namespace Bang.Core.Domain.Entities
         public List<string> Skills { get; private set; }
         public List<string> TurnPhase { get; private set; }
         public string DeckName { get; set; }
-        public IContext Context { get; set; }
+        public GameContext Context { get; set; }
 
         public Player()
         {
@@ -46,24 +46,24 @@ namespace Bang.Core.Domain.Entities
             EquipmentAreaName = $"Player{Position}_Equipment";
             JudgementAreaName = $"Player{Position}_Judgement";
 
-            Context.CreateArea(HandAreaName);
-            Context.CreateArea(EquipmentAreaName);
-            Context.CreateArea(JudgementAreaName);
+            Context.Zone.CreateArea(HandAreaName);
+            Context.Zone.CreateArea(EquipmentAreaName);
+            Context.Zone.CreateArea(JudgementAreaName);
         }
 
         public List<Card> GetHand()
         {
-            return Context.GetArea(HandAreaName);
+            return Context.Zone.GetArea(HandAreaName);
         }
 
         public List<Card> GetEquipment()
         {
-            return Context.GetArea(EquipmentAreaName);
+            return Context.Zone.GetArea(EquipmentAreaName);
         }
 
         public List<Card> GetJudgement()
         {
-            return Context.GetArea(JudgementAreaName);
+            return Context.Zone.GetArea(JudgementAreaName);
         }
 
         public void Draw(int count = 1)

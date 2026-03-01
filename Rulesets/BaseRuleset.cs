@@ -1,14 +1,12 @@
-using Bang.Core.Domain.Entities;
-using Bang.Core.Domain.Models;
-using Bang.Core.StateMachine;
+using Shayou.Core.Domain.Entities;
+using Shayou.Core.StateMachine;
 
-namespace Bang.Rulesets
+namespace Shayou.Rulesets
 {
     public abstract class BaseRuleset
     {
         public string Id { get; protected set; }
         public GameEngine Engine { get; set; }
-        public IContext Context { get; set; }
 
         public BaseRuleset(string id)
         {

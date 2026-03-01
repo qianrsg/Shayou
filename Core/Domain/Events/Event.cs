@@ -1,4 +1,4 @@
-namespace Bang.Core.Domain.Entities
+namespace Shayou.Core.Domain.Entities
 {
     public class Event : BaseEvent
     {

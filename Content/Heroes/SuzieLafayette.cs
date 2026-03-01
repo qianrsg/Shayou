@@ -1,4 +1,4 @@
-namespace Bang.Content.Heroes
+namespace Shayou.Content.Heroes
 {
     public class SuzieLafayette
     {
