@@ -15,10 +15,8 @@ namespace Shayou.Rulesets
 
         public abstract void Initialize();
 
-        public virtual void PrepareEvent(BaseEvent gameEvent) { }
+        public abstract RulesetRegistrations GetRegistrations();
 
-        public abstract void EventHandler(BaseEvent gameEvent);
-
-        public abstract void GameStart();
+        public abstract void SetupGame();
     }
 }

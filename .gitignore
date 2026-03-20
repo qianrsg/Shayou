@@ -27,6 +27,7 @@ x86/
 *.vspscc
 *.vssscc
 .builds
+.idea
 *.pidb
 *.svclog
 *.scc

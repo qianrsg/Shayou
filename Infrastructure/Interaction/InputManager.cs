@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading;
+using Shayou.Infrastructure.Interaction.Contracts;
 
 namespace Shayou.Infrastructure.Interaction
 {
@@ -9,6 +10,7 @@ namespace Shayou.Infrastructure.Interaction
         private int inputFlag;
         private Mutex inputMutex;
         private AutoResetEvent inputReadyEvent;
+        public InputRequestPacket? CurrentRequest { get; private set; }
 
         public InputManager()
         {
@@ -62,18 +64,20 @@ namespace Shayou.Infrastructure.Interaction
             }
         }
 
-        public string WaitForInput()
+        public string WaitForInput(InputRequestPacket requestPacket)
         {
-            EnableInput();
-            inputReadyEvent.WaitOne();
+            CurrentRequest = requestPacket;
 
             inputMutex.WaitOne();
             try
             {
+                inputFlag = 1;
+
                 if (inputQueue.Count > 0)
                 {
                     string input = inputQueue.Dequeue();
-                    DisableInput();
+                    inputFlag = 0;
+                    CurrentRequest = null;
                     return input;
                 }
             }
@@ -82,8 +86,29 @@ namespace Shayou.Infrastructure.Interaction
                 inputMutex.ReleaseMutex();
             }
 
-            DisableInput();
-            return null;
+            inputReadyEvent.WaitOne();
+
+            inputMutex.WaitOne();
+            try
+            {
+                inputFlag = 0;
+
+                if (inputQueue.Count > 0)
+                {
+                    string input = inputQueue.Dequeue();
+                    CurrentRequest = null;
+                    return input;
+                }
+                else
+                {
+                    CurrentRequest = null;
+                    return null;
+                }
+            }
+            finally
+            {
+                inputMutex.ReleaseMutex();
+            }
         }
     }
 }

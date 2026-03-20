@@ -15,15 +15,13 @@ namespace Shayou.Rulesets.Bang
             Console.WriteLine("   Setting up game with " + Engine.Context.Players.Count + " players");
         }
 
-        public override void EventHandler(BaseEvent gameEvent)
+        public override RulesetRegistrations GetRegistrations()
         {
-            Console.WriteLine("Handling events for Bang ruleset");
-            Console.WriteLine("   Processing card effects and abilities");
+            return new RulesetRegistrations();
         }
 
-        public override void GameStart()
+        public override void SetupGame()
         {
-            Initialize();
         }
     }
 }

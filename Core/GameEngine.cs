@@ -1,8 +1,8 @@
 using Shayou.Core.Domain.Entities;
 using Shayou.Core.Domain.Models;
 using Shayou.Infrastructure.Interaction;
+using Shayou.Infrastructure.Interaction.Contracts;
 using Shayou.Rulesets;
-using System.Collections.Generic;
 
 namespace Shayou.Core.StateMachine
 {
@@ -20,21 +20,73 @@ namespace Shayou.Core.StateMachine
             Context.Engine = this;
             Ruleset = ruleset;
             Ruleset.Engine = this;
+            RegisterRulesetRegistrations();
             Ruleset.Initialize();
             eventStack = new Stack<BaseEvent>();
             StackDepth = 0;
             InputManager = new InputManager();
         }
 
+        private void RegisterRulesetRegistrations()
+        {
+            RulesetRegistrations registrations = Ruleset.GetRegistrations();
+
+            foreach (var validatorPair in registrations.UiChoiceValidators)
+            {
+                Context.Registry.UiChoiceValidators.Register(
+                    validatorPair.Key,
+                    validatorPair.Value);
+            }
+
+            foreach (var ruleActionPair in registrations.TimingRuleActions)
+            {
+                Context.Registry.TimingRuleActions.Register(
+                    ruleActionPair.Key,
+                    ruleActionPair.Value);
+            }
+
+            foreach (var callbackPair in registrations.EventCallbacks)
+            {
+                Context.Registry.EventCallbacks.Register(
+                    callbackPair.Key,
+                    callbackPair.Value);
+            }
+        }
+
+        private void ExecuteTimingRuleAction(BaseEvent gameEvent)
+        {
+            string ruleActionKey = $"{gameEvent.Name}_{gameEvent.Timing}";
+            IReadOnlyList<Action<BaseEvent>> ruleActions = Context.Registry.TimingRuleActions.Get(ruleActionKey);
+
+            if (ruleActions.Count == 0)
+                return;
+
+            foreach (var ruleAction in ruleActions)
+            {
+                Thread.Sleep(10);
+                ruleAction(gameEvent);
+            }
+        }
+
+        private void AttachEventCallback(BaseEvent gameEvent)
+        {
+            Action<BaseEvent>? callback = Context.Registry.EventCallbacks.Get(gameEvent.Name);
+
+            if (callback != null)
+            {
+                gameEvent.Callback = callback;
+            }
+        }
+
         public void CreateEvent(BaseEvent gameEvent)
         {
-            Ruleset.PrepareEvent(gameEvent);
+            AttachEventCallback(gameEvent);
             eventStack.Push(gameEvent);
             StackDepth++;
 
             while (!gameEvent.IsEnd())
             {
-                Ruleset.EventHandler(gameEvent);
+                ExecuteTimingRuleAction(gameEvent);
                 gameEvent.AdvanceProcess();
             }
 
@@ -44,61 +96,12 @@ namespace Shayou.Core.StateMachine
 
         public void GameStart()
         {
-            Thread gameThread = new Thread(() => Ruleset.GameStart());
+            Thread gameThread = new Thread(() =>
+            {
+                Ruleset.SetupGame();
+                CreateEvent(new Event("Game"));
+            });
             gameThread.Start();
-        }
-
-        public void ChangeHealth(Player player, int num)
-        {
-            AtomicEvent atomicEvent = new AtomicEvent("ChangeHealth");
-            atomicEvent.SourcePlayer = player;
-            atomicEvent.Num = num;
-            atomicEvent.Callback = (e) =>
-            {
-                player.Health += num;
-            };
-            CreateEvent(atomicEvent);
-        }
-
-        public void MoveCard(List<Card> cards, List<Card> source, List<Card> target)
-        {
-            AtomicEvent atomicEvent = new AtomicEvent("MoveCard");
-            atomicEvent.Cards = cards;
-            atomicEvent.SourceContainer = source;
-            atomicEvent.TargetContainer = target;
-            atomicEvent.Callback = (e) =>
-            {
-                foreach (var card in cards)
-                {
-                    source.Remove(card);
-                    target.Add(card);
-                }
-            };
-            CreateEvent(atomicEvent);
-        }
-
-        public void ChangeMaxHealth(Player player, int num)
-        {
-            AtomicEvent atomicEvent = new AtomicEvent("ChangeMaxHealth");
-            atomicEvent.SourcePlayer = player;
-            atomicEvent.Num = num;
-            atomicEvent.Callback = (e) =>
-            {
-                player.MaxHealth += num;
-            };
-            CreateEvent(atomicEvent);
-        }
-
-        public void ChangeArmor(Player player, int num)
-        {
-            AtomicEvent atomicEvent = new AtomicEvent("ChangeArmor");
-            atomicEvent.SourcePlayer = player;
-            atomicEvent.Num = num;
-            atomicEvent.Callback = (e) =>
-            {
-                player.Armor += num;
-            };
-            CreateEvent(atomicEvent);
         }
 
         public void PostInput(string input)
@@ -106,9 +109,9 @@ namespace Shayou.Core.StateMachine
             InputManager.PostInput(input);
         }
 
-        public string WaitForInput()
+        public string WaitForInput(InputRequestPacket requestPacket)
         {
-            return InputManager.WaitForInput();
+            return InputManager.WaitForInput(requestPacket);
         }
     }
 }

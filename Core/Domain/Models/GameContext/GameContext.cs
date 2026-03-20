@@ -8,6 +8,7 @@ namespace Shayou.Core.Domain.Models
         public List<Player> Players { get; set; }
         public Player CurrentPlayer { get; set; }
         public Zone Zone { get; set; }
+        public GameRegistry Registry { get; set; }
         public GameEngine Engine { get; set; }
         public int Round { get; set; }
 
@@ -15,6 +16,7 @@ namespace Shayou.Core.Domain.Models
         {
             Players = new List<Player>();
             Zone = new Zone();
+            Registry = new GameRegistry();
             Round = 0;
             CurrentPlayer = null;
         }

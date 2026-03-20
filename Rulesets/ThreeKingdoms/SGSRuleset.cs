@@ -1,17 +1,17 @@
 using Shayou.Core.Domain.Entities;
+using Shayou.Infrastructure.Interaction;
+using Shayou.Infrastructure.Interaction.Contracts;
+using Shayou.Infrastructure.Interaction.Validation;
 using Shayou.Rulesets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 
 namespace Shayou.Rulesets.ThreeKingdoms
 {
     public class SGSRuleset : BaseRuleset
     {
         private readonly List<string> _playerTurnPhases;
-        private Dictionary<string, Action<BaseEvent>> _eventHandlers;
-        private Dictionary<string, Action<BaseEvent>> _eventCallbacks;
 
         public SGSRuleset() : base("sgs")
         {
@@ -24,9 +24,6 @@ namespace Shayou.Rulesets.ThreeKingdoms
                 "DiscardPhase",
                 "EndPhase"
             };
-
-            InitializeEventHandlers();
-            InitializeEventCallbacks();
         }
 
         public override void Initialize()
@@ -35,7 +32,32 @@ namespace Shayou.Rulesets.ThreeKingdoms
             Console.WriteLine($"   Setting up game with {Engine.Context.Players.Count} players");
         }
 
-        public override void GameStart()
+        public override RulesetRegistrations GetRegistrations()
+        {
+            return new RulesetRegistrations
+            {
+                UiChoiceValidators = new Dictionary<string, UiChoiceValidator>
+                {
+                    { "PlayPhase", new UiChoiceValidator("PlayPhase") }
+                },
+                TimingRuleActions = new Dictionary<string, List<Action<BaseEvent>>>
+                {
+                    { "Game_Entering", new List<Action<BaseEvent>> { HandleGameEntering } },
+                    { "PlayerTurn_Entering", new List<Action<BaseEvent>> { HandlePlayerTurnEntering } }
+                },
+                EventCallbacks = new Dictionary<string, Action<BaseEvent>>
+                {
+                    { "Game", OnGameCallback },
+                    { "Round", OnRoundCallback },
+                    { "PlayerTurn", OnPlayerTurnCallback },
+                    { "DrawPhase", OnDrawPhaseCallback },
+                    { "PlayPhase", OnPlayPhaseCallback },
+                    { "Draw", OnDrawCallback }
+                }
+            };
+        }
+
+        public override void SetupGame()
         {
             Engine.Context.Zone.CreateArea("Public_Deck");
             Engine.Context.Zone.CreateArea("Public_Discard");
@@ -53,55 +75,20 @@ namespace Shayou.Rulesets.ThreeKingdoms
 
                 Engine.Context.Players.Add(player);
             }
-
-            var gameEvent = new Event("Game");
-            Engine.Context.CreateEvent(gameEvent);
         }
 
-        private void InitializeEventHandlers()
+        private InputRequestPacket CreateInputRequestPacket()
         {
-            _eventHandlers = new Dictionary<string, Action<BaseEvent>>
+            return new InputRequestPacket
             {
-                { "Game_Entering", HandleGameEntering },
-                { "PlayerTurn_Entering", HandlePlayerTurnEntering }
+                WindowId = "",
+                PlayerId = "",
+                RequestKey = "",
+                PromptKey = "",
+                ValidatorKey = null,
+                TimeoutMs = 10000,
+                CanBeCancelled = true
             };
-        }
-
-        private void InitializeEventCallbacks()
-        {
-            _eventCallbacks = new Dictionary<string, Action<BaseEvent>>
-            {
-                { "Game", OnGameCallback },
-                { "Round", OnRoundCallback },
-                { "PlayerTurn", OnPlayerTurnCallback },
-                { "DrawPhase", OnDrawPhaseCallback },
-                { "PlayPhase", OnPlayPhaseCallback },
-                { "Draw", OnDrawCallback },
-            };
-        }
-
-        public override void PrepareEvent(BaseEvent gameEvent)
-        {
-            if (_eventCallbacks.TryGetValue(gameEvent.Name, out var callback))
-            {
-                gameEvent.Callback = callback;
-            }
-        }
-
-        public override void EventHandler(BaseEvent gameEvent)
-        {
-            string indent = new string(' ', Engine.StackDepth * 2);
-
-            Console.WriteLine(
-                $"{indent}Event: {gameEvent.Name}, Timing: {gameEvent.Timing}");
-
-            string handlerKey = $"{gameEvent.Name}_{gameEvent.Timing}";
-
-            if (_eventHandlers.TryGetValue(handlerKey, out var handler))
-            {
-                Thread.Sleep(10);
-                handler(gameEvent);
-            }
         }
 
         private void OnGameCallback(BaseEvent e)
@@ -171,15 +158,14 @@ namespace Shayou.Rulesets.ThreeKingdoms
 
             string deckName = player.DeckName;
             List<Card> cards = Engine.Context.Zone.DrawTopCard($"{deckName}_Deck", de.Num);
-            List<Card> deck = Engine.Context.Zone.GetArea($"{deckName}_Deck");
+            List<Card> hand = player.GetHand();
 
             Console.WriteLine($"[{player.HeroName}] 摸牌 {cards.Count} 张:");
             foreach (var card in cards)
             {
                 Console.WriteLine($"  - {card.Suit}{card.Rank} {card.Name}");
+                hand.Add(card);
             }
-
-            Engine.MoveCard(cards, deck, player.GetHand());
         }
 
         private void HandleGameEntering(BaseEvent gameEvent)
@@ -212,11 +198,28 @@ namespace Shayou.Rulesets.ThreeKingdoms
 
         private void OnPlayPhaseCallback(BaseEvent e)
         {
-            while (true) {
-                Console.WriteLine("等待玩家输入，按任意键继续...");
-                string input = Engine.WaitForInput();
-                Console.WriteLine($"收到输入: {input}");
-                if (input == "pass") break;
+            Player currentPlayer = Engine.Context.CurrentPlayer;
+            if (currentPlayer == null)
+                return;
+
+            const string uiChoiceValidatorKey = "PlayPhase";
+
+            while (true)
+            {
+                var requestPacket = CreateInputRequestPacket() with
+                {
+                    WindowId = "PlayPhase",
+                    PlayerId = currentPlayer.Position.ToString(),
+                    RequestKey = "PlayPhase",
+                    PromptKey = "prompt.play_phase",
+                    ValidatorKey = uiChoiceValidatorKey
+                };
+
+                ConsoleLogger.Log(LogChannel.Backend, $"发送输入请求: {requestPacket.RequestKey}");
+                string input = Engine.WaitForInput(requestPacket);
+                ConsoleLogger.Log(LogChannel.Frontend, $"收到输入: {input}");
+                if (input == "pass")
+                    break;
             }
         }
     }
