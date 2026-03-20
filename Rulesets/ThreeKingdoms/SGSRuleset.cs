@@ -217,7 +217,7 @@ namespace Shayou.Rulesets.ThreeKingdoms
 
                 ConsoleLogger.Log(LogChannel.Backend, $"发送输入请求: {requestPacket.RequestKey}");
                 string input = Engine.WaitForInput(requestPacket);
-                ConsoleLogger.Log(LogChannel.Frontend, $"收到输入: {input}");
+                ConsoleLogger.Log(LogChannel.Backend, $"收到输入: {input}");
                 if (input == "pass")
                     break;
             }

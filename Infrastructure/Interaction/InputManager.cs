@@ -1,114 +1,26 @@
-using System.Collections.Generic;
-using System.Threading;
 using Shayou.Infrastructure.Interaction.Contracts;
+using Shayou.Infrastructure.Interaction.Transport;
 
 namespace Shayou.Infrastructure.Interaction
 {
     public class InputManager
     {
-        private Queue<string> inputQueue;
-        private int inputFlag;
-        private Mutex inputMutex;
-        private AutoResetEvent inputReadyEvent;
+        private readonly IServerConnection serverConnection;
         public InputRequestPacket? CurrentRequest { get; private set; }
 
-        public InputManager()
+        public InputManager(IServerConnection serverConnection)
         {
-            inputQueue = new Queue<string>();
-            inputFlag = 0;
-            inputMutex = new Mutex();
-            inputReadyEvent = new AutoResetEvent(false);
-        }
-
-        public void PostInput(string input)
-        {
-            inputMutex.WaitOne();
-            try
-            {
-                if (inputFlag == 1)
-                {
-                    inputQueue.Enqueue(input);
-                    inputReadyEvent.Set();
-                }
-            }
-            finally
-            {
-                inputMutex.ReleaseMutex();
-            }
-        }
-
-        public void EnableInput()
-        {
-            inputMutex.WaitOne();
-            try
-            {
-                inputFlag = 1;
-            }
-            finally
-            {
-                inputMutex.ReleaseMutex();
-            }
-        }
-
-        public void DisableInput()
-        {
-            inputMutex.WaitOne();
-            try
-            {
-                inputFlag = 0;
-                inputQueue.Clear();
-            }
-            finally
-            {
-                inputMutex.ReleaseMutex();
-            }
+            this.serverConnection = serverConnection;
         }
 
         public string WaitForInput(InputRequestPacket requestPacket)
         {
             CurrentRequest = requestPacket;
+            serverConnection.SendPacket(requestPacket);
 
-            inputMutex.WaitOne();
-            try
-            {
-                inputFlag = 1;
-
-                if (inputQueue.Count > 0)
-                {
-                    string input = inputQueue.Dequeue();
-                    inputFlag = 0;
-                    CurrentRequest = null;
-                    return input;
-                }
-            }
-            finally
-            {
-                inputMutex.ReleaseMutex();
-            }
-
-            inputReadyEvent.WaitOne();
-
-            inputMutex.WaitOne();
-            try
-            {
-                inputFlag = 0;
-
-                if (inputQueue.Count > 0)
-                {
-                    string input = inputQueue.Dequeue();
-                    CurrentRequest = null;
-                    return input;
-                }
-                else
-                {
-                    CurrentRequest = null;
-                    return null;
-                }
-            }
-            finally
-            {
-                inputMutex.ReleaseMutex();
-            }
+            string input = serverConnection.WaitForInput();
+            CurrentRequest = null;
+            return input;
         }
     }
 }

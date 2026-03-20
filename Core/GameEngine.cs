@@ -2,6 +2,7 @@ using Shayou.Core.Domain.Entities;
 using Shayou.Core.Domain.Models;
 using Shayou.Infrastructure.Interaction;
 using Shayou.Infrastructure.Interaction.Contracts;
+using Shayou.Infrastructure.Interaction.Transport;
 using Shayou.Rulesets;
 
 namespace Shayou.Core.StateMachine
@@ -11,6 +12,8 @@ namespace Shayou.Core.StateMachine
         public GameContext Context { get; private set; }
         public BaseRuleset Ruleset { get; private set; }
         public InputManager InputManager { get; private set; }
+        public IClientConnection ClientConnection { get; private set; }
+        private IServerConnection ServerConnection { get; set; }
         private Stack<BaseEvent> eventStack;
         public int StackDepth { get; private set; }
 
@@ -24,7 +27,10 @@ namespace Shayou.Core.StateMachine
             Ruleset.Initialize();
             eventStack = new Stack<BaseEvent>();
             StackDepth = 0;
-            InputManager = new InputManager();
+            LocalLoopbackTransport transport = new LocalLoopbackTransport();
+            ServerConnection = transport.CreateServerConnection();
+            ClientConnection = transport.CreateClientConnection();
+            InputManager = new InputManager(ServerConnection);
         }
 
         private void RegisterRulesetRegistrations()
@@ -102,11 +108,6 @@ namespace Shayou.Core.StateMachine
                 CreateEvent(new Event("Game"));
             });
             gameThread.Start();
-        }
-
-        public void PostInput(string input)
-        {
-            InputManager.PostInput(input);
         }
 
         public string WaitForInput(InputRequestPacket requestPacket)
