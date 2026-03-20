@@ -8,4 +8,8 @@
     <RootNamespace>Shayou</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Ui\Godot\" />
+  </ItemGroup>
+
 </Project>
