@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Shayou.Engine.Core.Domain.Events;
-using Shayou.Engine.Core.Domain.Models;
+using Shayou.Engine.Core.Runtime.Context;
 
 namespace Shayou.Engine.Core.Domain.Entities
 {
@@ -26,8 +26,13 @@ namespace Shayou.Engine.Core.Domain.Entities
             HeroName = "";
             MaxHealth = 0;
             Armor = 0;
+            HandAreaName = "";
+            EquipmentAreaName = "";
+            JudgementAreaName = "";
             Skills = new List<string>();
             TurnPhase = new List<string>();
+            DeckName = "";
+            Context = null!;
         }
 
         public Player(int health, int position, string heroName)
@@ -37,34 +42,42 @@ namespace Shayou.Engine.Core.Domain.Entities
             HeroName = heroName;
             MaxHealth = health;
             Armor = 0;
+            HandAreaName = "";
+            EquipmentAreaName = "";
+            JudgementAreaName = "";
             Skills = new List<string>();
             TurnPhase = new List<string>();
+            DeckName = "";
+            Context = null!;
         }
 
         public void InitializeAreas()
         {
+            if (Context == null)
+                throw new InvalidOperationException("Player Context is not initialized");
+
             HandAreaName = $"Player{Position}_Hand";
             EquipmentAreaName = $"Player{Position}_Equipment";
             JudgementAreaName = $"Player{Position}_Judgement";
 
-            Context.Zone.CreateArea(HandAreaName);
-            Context.Zone.CreateArea(EquipmentAreaName);
-            Context.Zone.CreateArea(JudgementAreaName);
+            Context.Cards.CreateArea(HandAreaName);
+            Context.Cards.CreateArea(EquipmentAreaName);
+            Context.Cards.CreateArea(JudgementAreaName);
         }
 
         public List<Card> GetHand()
         {
-            return Context.Zone.GetArea(HandAreaName);
+            return Context.Cards.GetArea(HandAreaName);
         }
 
         public List<Card> GetEquipment()
         {
-            return Context.Zone.GetArea(EquipmentAreaName);
+            return Context.Cards.GetArea(EquipmentAreaName);
         }
 
         public List<Card> GetJudgement()
         {
-            return Context.Zone.GetArea(JudgementAreaName);
+            return Context.Cards.GetArea(JudgementAreaName);
         }
 
         public void Draw(int count = 1)
@@ -72,7 +85,7 @@ namespace Shayou.Engine.Core.Domain.Entities
             Event drawEvent = new Event("Draw");
             drawEvent.SourcePlayer = this;
             drawEvent.Num = count;
-            Context.CreateEvent(drawEvent);
+            Context.Services.EventDispatcher.DispatchEvent(drawEvent);
         }
     }
 }

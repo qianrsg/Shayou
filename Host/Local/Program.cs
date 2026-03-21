@@ -1,5 +1,6 @@
-using Shayou.Engine.Core.StateMachine;
-using Shayou.Engine.Rulesets.ThreeKingdoms;
+using Shayou.Engine.Core.Runtime;
+using Shayou.Gameplay.Rulesets.ThreeKingdoms;
+using Shayou.Host.Local.Transport;
 using Shayou.Protocol.Messages;
 using System;
 using System.Text;
@@ -15,7 +16,11 @@ namespace Shayou.Host.Local
             Console.WriteLine("=== Game Engine Test ===\n");
 
             SGSRuleset ruleset = new SGSRuleset();
-            GameEngine engine = new GameEngine(ruleset);
+            LocalLoopbackTransport transport = new LocalLoopbackTransport();
+            GameEngine engine = new GameEngine(
+                ruleset,
+                transport.CreateServerConnection(),
+                transport.CreateClientConnection());
 
             Thread frontendThread = new Thread(() =>
             {
@@ -39,7 +44,12 @@ namespace Shayou.Host.Local
 
             while (true)
             {
-                string input = Console.ReadLine();
+                string? input = Console.ReadLine();
+                if (input == null)
+                {
+                    break;
+                }
+
                 if (input == "exit")
                 {
                     break;

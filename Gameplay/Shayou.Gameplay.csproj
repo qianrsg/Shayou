@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Shayou.Gameplay</RootNamespace>
+    <AssemblyName>Shayou.Gameplay</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Engine\Shayou.Engine.csproj" />
+    <ProjectReference Include="..\Protocol\Shayou.Protocol.csproj" />
+  </ItemGroup>
+
+</Project>

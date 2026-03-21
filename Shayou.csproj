@@ -9,7 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Ui\Godot\" />
+    <Compile Remove="UI\**\*.cs" />
+    <Compile Remove="Engine\obj\**\*.cs" />
+    <Compile Remove="Protocol\obj\**\*.cs" />
+    <Compile Remove="Gameplay\obj\**\*.cs" />
+    <Compile Remove="Host\**\obj\**\*.cs" />
   </ItemGroup>
 
 </Project>

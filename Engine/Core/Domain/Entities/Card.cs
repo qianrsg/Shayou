@@ -8,7 +8,7 @@ namespace Shayou.Engine.Core.Domain.Entities
         public string Name { get; set; }
         public string Category { get; set; }
         public string AreaName { get; set; }
-        private string currentArea;
+        private string _currentArea;
 
         public Card()
         {
@@ -18,7 +18,7 @@ namespace Shayou.Engine.Core.Domain.Entities
             Name = "";
             Category = "";
             AreaName = "";
-            currentArea = "";
+            _currentArea = "";
         }
 
         public Card(string suit, int rank, string id, string name)
@@ -29,17 +29,17 @@ namespace Shayou.Engine.Core.Domain.Entities
             Name = name;
             Category = "";
             AreaName = "";
-            currentArea = "";
+            _currentArea = "";
         }
 
         public string GetCurrentArea()
         {
-            return currentArea;
+            return _currentArea;
         }
 
         public void MoveTo(string areaName)
         {
-            currentArea = areaName;
+            _currentArea = areaName;
         }
 
         public void PrintInfo()
@@ -49,7 +49,7 @@ namespace Shayou.Engine.Core.Domain.Entities
             Console.WriteLine($"     Rank: {Rank}");
             Console.WriteLine($"     Id: {Id}");
             Console.WriteLine($"     Name: {Name}");
-            Console.WriteLine($"     Current Area: {currentArea}");
+            Console.WriteLine($"     Current Area: {_currentArea}");
         }
     }
 }

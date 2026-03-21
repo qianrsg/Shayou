@@ -1,3 +1,4 @@
+using Shayou.Engine.Foundations.Events;
 using Shayou.Engine.Core.Domain.Entities;
 
 namespace Shayou.Engine.Core.Domain.Events
@@ -6,30 +7,10 @@ namespace Shayou.Engine.Core.Domain.Events
     {
         public AtomicEvent()
         {
-            Name = "";
-            SourceCard = null;
-            Cards = null;
-            SourcePlayer = null;
-            TargetPlayer = null;
-            SourceContainer = null;
-            TargetContainer = null;
-            Data = new Dictionary<string, object>();
-            Num = 0;
-            Timing = "Entering";
         }
 
-        public AtomicEvent(string name)
+        public AtomicEvent(string name) : base(name)
         {
-            Name = name;
-            SourceCard = null;
-            Cards = null;
-            SourcePlayer = null;
-            TargetPlayer = null;
-            SourceContainer = null;
-            TargetContainer = null;
-            Data = new Dictionary<string, object>();
-            Num = 0;
-            Timing = "Entering";
         }
 
         public override void AdvanceProcess()
