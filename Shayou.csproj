@@ -14,6 +14,7 @@
     <Compile Remove="Protocol\obj\**\*.cs" />
     <Compile Remove="Gameplay\obj\**\*.cs" />
     <Compile Remove="Host\**\obj\**\*.cs" />
+    <Compile Remove="ClientRuntime\obj\**\*.cs" />
   </ItemGroup>
 
 </Project>

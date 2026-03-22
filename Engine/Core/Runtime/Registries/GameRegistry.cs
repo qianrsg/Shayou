@@ -1,5 +1,6 @@
 using Shayou.Engine.Foundations.Events;
 using System;
+using System.Collections.Generic;
 
 namespace Shayou.Engine.Core.Runtime.Registries
 {
@@ -7,11 +8,13 @@ namespace Shayou.Engine.Core.Runtime.Registries
     {
         public TimingRuleActionRegistry TimingRuleActions { get; }
         public EventCallbackRegistry EventCallbacks { get; }
+        public InputRequestRegistry InputRequests { get; }
 
         public GameRegistry()
         {
             TimingRuleActions = new TimingRuleActionRegistry();
             EventCallbacks = new EventCallbackRegistry();
+            InputRequests = new InputRequestRegistry();
         }
     }
 
@@ -72,4 +75,5 @@ namespace Shayou.Engine.Core.Runtime.Registries
                 : null;
         }
     }
+
 }

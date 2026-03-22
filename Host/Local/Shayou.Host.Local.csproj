@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\ClientRuntime\Shayou.ClientRuntime.csproj" />
     <ProjectReference Include="..\..\Engine\Shayou.Engine.csproj" />
     <ProjectReference Include="..\..\Gameplay\Shayou.Gameplay.csproj" />
     <ProjectReference Include="..\..\Protocol\Shayou.Protocol.csproj" />

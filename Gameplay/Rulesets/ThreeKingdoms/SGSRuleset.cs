@@ -1,8 +1,8 @@
 using Shayou.Engine.Core.Domain.Entities;
 using Shayou.Engine.Core.Domain.Events;
 using Shayou.Engine.Foundations.Events;
+using Shayou.Engine.Foundations.Input;
 using Shayou.Engine.Foundations.Rulesets;
-using Shayou.Protocol.Messages;
 using System;
 using System.Collections.Generic;
 
@@ -48,6 +48,10 @@ namespace Shayou.Gameplay.Rulesets.ThreeKingdoms
                     { "DrawPhase", OnDrawPhaseCallback },
                     { "PlayPhase", OnPlayPhaseCallback },
                     { "Draw", OnDrawCallback }
+                },
+                InputRequests = new Dictionary<string, Func<InputRequest>>
+                {
+                    { "game.PlayPhase", CreatePlayPhaseRequest }
                 }
             };
         }
@@ -70,20 +74,6 @@ namespace Shayou.Gameplay.Rulesets.ThreeKingdoms
 
                 Context.Players.Add(player);
             }
-        }
-
-        private InputRequestPacket CreateInputRequestPacket()
-        {
-            return new InputRequestPacket
-            {
-                WindowId = "",
-                PlayerId = "",
-                RequestKey = "",
-                PromptKey = "",
-                ValidatorKey = null,
-                TimeoutMs = 10000,
-                CanBeCancelled = true
-            };
         }
 
         private void OnGameCallback(BaseEvent e)
@@ -196,25 +186,23 @@ namespace Shayou.Gameplay.Rulesets.ThreeKingdoms
             if (currentPlayer == null)
                 return;
 
-            const string uiChoiceValidatorKey = "PlayPhase";
-
             while (true)
             {
-                var requestPacket = CreateInputRequestPacket() with
-                {
-                    WindowId = "PlayPhase",
-                    PlayerId = currentPlayer.Position.ToString(),
-                    RequestKey = "PlayPhase",
-                    PromptKey = "prompt.play_phase",
-                    ValidatorKey = uiChoiceValidatorKey
-                };
+                InputSubmission submission = RequestInput("game.PlayPhase");
+                Console.WriteLine($"[Backend] Received input: {submission.ActionKey}");
 
-                Console.WriteLine($"[Backend] Sent input request: {requestPacket.RequestKey}");
-                string input = RequestInput(requestPacket);
-                Console.WriteLine($"[Backend] Received input: {input}");
-                if (input == "pass")
+                if (submission.ActionKey == "game.Pass")
+                {
                     break;
+                }
             }
+        }
+
+        private InputRequest CreatePlayPhaseRequest()
+        {
+            return new ActionInputRequest(
+                "game.PlayPhase",
+                new[] { "game.Pass", "game.Confirm", "game.Cancel" });
         }
     }
 }

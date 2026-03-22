@@ -6,6 +6,6 @@ namespace Shayou.Protocol.Transport
     {
         void SendPacket(PacketEnvelope packet);
 
-        string WaitForInput();
+        PacketEnvelope WaitForPacket();
     }
 }

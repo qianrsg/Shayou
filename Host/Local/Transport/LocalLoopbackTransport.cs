@@ -1,4 +1,5 @@
 using Shayou.Protocol.Messages;
+using Shayou.Protocol.Serialization;
 using Shayou.Protocol.Transport;
 using System.Collections.Generic;
 using System.Threading;
@@ -7,12 +8,12 @@ namespace Shayou.Host.Local.Transport
 {
     public class LocalLoopbackTransport
     {
-        private readonly LocalMessageQueue<PacketEnvelope> _serverToClientQueue;
+        private readonly LocalMessageQueue<string> _serverToClientQueue;
         private readonly LocalMessageQueue<string> _clientToServerQueue;
 
         public LocalLoopbackTransport()
         {
-            _serverToClientQueue = new LocalMessageQueue<PacketEnvelope>();
+            _serverToClientQueue = new LocalMessageQueue<string>();
             _clientToServerQueue = new LocalMessageQueue<string>();
         }
 
@@ -29,11 +30,11 @@ namespace Shayou.Host.Local.Transport
 
     internal class LocalServerConnection : IServerConnection
     {
-        private readonly LocalMessageQueue<PacketEnvelope> _serverToClientQueue;
+        private readonly LocalMessageQueue<string> _serverToClientQueue;
         private readonly LocalMessageQueue<string> _clientToServerQueue;
 
         public LocalServerConnection(
-            LocalMessageQueue<PacketEnvelope> serverToClientQueue,
+            LocalMessageQueue<string> serverToClientQueue,
             LocalMessageQueue<string> clientToServerQueue)
         {
             _serverToClientQueue = serverToClientQueue;
@@ -42,22 +43,24 @@ namespace Shayou.Host.Local.Transport
 
         public void SendPacket(PacketEnvelope packet)
         {
-            _serverToClientQueue.Send(packet);
+            string packetJson = PacketJsonSerializer.Serialize(packet);
+            _serverToClientQueue.Send(packetJson);
         }
 
-        public string WaitForInput()
+        public PacketEnvelope WaitForPacket()
         {
-            return _clientToServerQueue.Receive();
+            string packetJson = _clientToServerQueue.Receive();
+            return PacketJsonSerializer.Deserialize(packetJson);
         }
     }
 
     internal class LocalClientConnection : IClientConnection
     {
-        private readonly LocalMessageQueue<PacketEnvelope> _serverToClientQueue;
+        private readonly LocalMessageQueue<string> _serverToClientQueue;
         private readonly LocalMessageQueue<string> _clientToServerQueue;
 
         public LocalClientConnection(
-            LocalMessageQueue<PacketEnvelope> serverToClientQueue,
+            LocalMessageQueue<string> serverToClientQueue,
             LocalMessageQueue<string> clientToServerQueue)
         {
             _serverToClientQueue = serverToClientQueue;
@@ -66,67 +69,47 @@ namespace Shayou.Host.Local.Transport
 
         public PacketEnvelope WaitForPacket()
         {
-            return _serverToClientQueue.Receive();
+            string packetJson = _serverToClientQueue.Receive();
+            return PacketJsonSerializer.Deserialize(packetJson);
         }
 
-        public void SendInput(string input)
+        public void SendPacket(PacketEnvelope packet)
         {
-            _clientToServerQueue.Send(input);
+            string packetJson = PacketJsonSerializer.Serialize(packet);
+            _clientToServerQueue.Send(packetJson);
         }
     }
 
     internal class LocalMessageQueue<T>
     {
         private readonly Queue<T> _messages;
-        private readonly Mutex _mutex;
-        private readonly AutoResetEvent _messageReadyEvent;
+        private readonly object _syncRoot;
+        private readonly SemaphoreSlim _messageCount;
 
         public LocalMessageQueue()
         {
             _messages = new Queue<T>();
-            _mutex = new Mutex();
-            _messageReadyEvent = new AutoResetEvent(false);
+            _syncRoot = new object();
+            _messageCount = new SemaphoreSlim(0);
         }
 
         public void Send(T message)
         {
-            _mutex.WaitOne();
-            try
+            lock (_syncRoot)
             {
                 _messages.Enqueue(message);
-                _messageReadyEvent.Set();
             }
-            finally
-            {
-                _mutex.ReleaseMutex();
-            }
+
+            _messageCount.Release();
         }
 
         public T Receive()
         {
-            _mutex.WaitOne();
-            try
-            {
-                if (_messages.Count > 0)
-                {
-                    return _messages.Dequeue();
-                }
-            }
-            finally
-            {
-                _mutex.ReleaseMutex();
-            }
+            _messageCount.Wait();
 
-            _messageReadyEvent.WaitOne();
-
-            _mutex.WaitOne();
-            try
+            lock (_syncRoot)
             {
                 return _messages.Dequeue();
-            }
-            finally
-            {
-                _mutex.ReleaseMutex();
             }
         }
     }

@@ -1,26 +1,51 @@
+using Shayou.Engine.Foundations.Input;
 using Shayou.Protocol.Messages;
 using Shayou.Protocol.Transport;
 
 namespace Shayou.Engine.Core.Runtime.Input
 {
-    public class InputManager
+    public class InputManager : IInputService
     {
         private readonly IServerConnection serverConnection;
-        public InputRequestPacket? CurrentRequest { get; private set; }
+        public string? CurrentContextKey { get; private set; }
 
         public InputManager(IServerConnection serverConnection)
         {
             this.serverConnection = serverConnection;
         }
 
-        public string RequestInput(InputRequestPacket requestPacket)
+        public InputSubmission WaitForInput(InputRequest request)
         {
-            CurrentRequest = requestPacket;
-            serverConnection.SendPacket(requestPacket);
+            CurrentContextKey = request.Key;
 
-            string input = serverConnection.WaitForInput();
-            CurrentRequest = null;
-            return input;
+            try
+            {
+                while (true)
+                {
+                    PacketEnvelope packet = serverConnection.WaitForPacket();
+
+                    if (packet is not CommandPacket commandPacket)
+                    {
+                        throw new InvalidOperationException(
+                            $"Expected command packet from client, but received '{packet.Kind}:{packet.Key}'.");
+                    }
+
+                    InputSubmission submission = new()
+                    {
+                        ActionKey = commandPacket.Key
+                    };
+
+                    InputCheckResult checkResult = request.CheckInput(submission);
+                    if (checkResult.IsValid)
+                    {
+                        return submission;
+                    }
+                }
+            }
+            finally
+            {
+                CurrentContextKey = null;
+            }
         }
     }
 }

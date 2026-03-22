@@ -1,6 +1,6 @@
 using Shayou.Engine.Core.Runtime.Context;
 using Shayou.Engine.Foundations.Events;
-using Shayou.Protocol.Messages;
+using Shayou.Engine.Foundations.Input;
 
 namespace Shayou.Engine.Foundations.Rulesets
 {
@@ -19,9 +19,15 @@ namespace Shayou.Engine.Foundations.Rulesets
             Context.Services.EventDispatcher.DispatchEvent(gameEvent);
         }
 
-        protected string RequestInput(InputRequestPacket requestPacket)
+        protected InputSubmission RequestInput(InputRequest request)
         {
-            return Context.Services.InputService.RequestInput(requestPacket);
+            return Context.Services.InputService.WaitForInput(request);
+        }
+
+        protected InputSubmission RequestInput(string key)
+        {
+            InputRequest request = Context.Registry.InputRequests.Create(key);
+            return RequestInput(request);
         }
 
         public abstract void Initialize();

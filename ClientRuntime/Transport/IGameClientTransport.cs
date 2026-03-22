@@ -1,8 +1,8 @@
 using Shayou.Protocol.Messages;
 
-namespace Shayou.Protocol.Transport
+namespace Shayou.ClientRuntime.Transport
 {
-    public interface IClientConnection
+    public interface IGameClientTransport
     {
         void SendPacket(PacketEnvelope packet);
 
